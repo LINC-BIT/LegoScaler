@@ -57,6 +57,8 @@ and energy consumption by 40.2%.
 
 ### 1.2 Hardware/software Requirements and Dependencies<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
+#### 1.2.1 Hardware Requirements<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
 - **Hardware requirements for full running of experiments in the paper**:
 
   <table align="center">
@@ -78,15 +80,78 @@ and energy consumption by 40.2%.
     </tbody>
   </table>
 
-#### 1.2.1 Hardware Requirements<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
-
 #### 1.2.2 Software Requirements<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+- **Recommended software for full running of experiments in the paper**:
+
+  <table align="center">
+    <thead>
+      <tr>
+        <th>Operating System</th>
+        <th>CUDA</th>
+        <th>Others</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ubuntu LTS 22.04.4 LTS</td>
+        <td>CUDA 13.0</td>
+        <td>Kernel 6.8.0-124-generic</td>
+      </tr>
+    </tbody>
+  </table>
 
 #### 1.2.3 Get Source Code<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
+  You can obtain the source code for artifacts evaluation by the following command. **The code does not perform any malicious or destructive operations**.
+
+  ```bash
+  git clone https://github.com/LINC-BIT/LegoScalerr.git
+  ```
+
 #### 1.2.4 Install Dependencies<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
+  You can isntall the required dependencies by the following command. .
+
+  ```bash
+  pip install -r requirements.txt
+  ```
+
 #### 1.2.5 About Dataset<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+- **Dataset for pre-training**:
+  <table align="center">
+    <thead>
+      <tr>
+        <th>Application</th>
+        <th>Dataset</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Image classification</td>
+        <td>ImageNet</td>
+      </tr>
+    </tbody>
+  <tbody>
+      <tr>
+        <td>Object Detection</td>
+        <td>COCO2017</td>
+      </tr>
+    </tbody>
+  <tbody>
+      <tr>
+        <td>Text classification</td>
+        <td>AGNews</td>
+      </tr>
+    </tbody>
+  <tbody>
+      <tr>
+        <td>Visual question answering</td>
+        <td>VQAv2</td>
+      </tr>
+    </tbody>
+  </table>
 
 ## 2. Evaluation Reproduction
 
