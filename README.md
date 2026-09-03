@@ -1,8 +1,8 @@
 # LegoScaler: Differentiated Block-grained Scaling for Mixed Inference and Retraining Jobs at Edge
 
-<div style="text-align: center;">
+<p align="center">
   <img src="./readme_imgs/intro.png" alt="介绍图" width="600" height="400">
-</div>
+</p>
 
 This repository contains the artifacts for the paper **"LegoScaler: Differentiated Block-grained Scaling
 for Mixed Inference and Retraining Jobs at Edge"**.
