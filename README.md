@@ -57,6 +57,27 @@ and energy consumption by 40.2%.
 
 ### 1.2 Hardware/software Requirements and Dependencies<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
+- **Hardware requirements for full running of experiments in the paper**:
+
+  <table align="center">
+    <thead>
+      <tr>
+        <th>RAM</th>
+        <th>CPU</th>
+        <th>Disk</th>
+        <th>GPU</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>128 GB</td>
+        <td>One 64-core server CPU (e.g., Intel(R) Xeon(R) Gold 6430)</td>
+        <td>At least<br>150 GB free</td>
+        <td>One NVIDIA GPU with more than 60 GB VRAM (e.g., A100)</td>
+      </tr>
+    </tbody>
+  </table>
+
 #### 1.2.1 Hardware Requirements<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 #### 1.2.2 Software Requirements<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
