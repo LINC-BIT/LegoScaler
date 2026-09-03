@@ -29,6 +29,32 @@ for Mixed Inference and Retraining Jobs at Edge"**.
 
 ### 1.1 Introduction<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
+- **Background**:
+  - **Edge AI applications**: Artificial intelligence (AI) applications such as object/image 
+  recognition and question answering have become ubiquitous in 
+  edge computing system.
+  - **Large discrepancy in network architectures**: The inference model is designed for the stationary input distributions, 
+  while the retraining model’s network architecture is built upon the current input distribution.
+  - **Conflicting optimization objectives in resource allocation**: The objective of an inference model is to 
+  maximize its accuracy under the latency constraint over the application’s 
+  entire running period. But for the retraining model, it is scaled to maximize the accuracy after a short retraining window (e.g. 30 minutes).
+
+- **LegoScaler Modules**: 
+  - **Differentiated model generator**: It retains the most important components of 
+  each model according to the current input distribution.
+  - **Neuron-grained knowledge transfer**: It propagates the learned knowledge(i.e. the weights' change of neurons) from the 
+  retraining model to the inference model through neuron indexes.
+  - **Accuracy predictor**: It quantitatively evaluates the model accuracy under different configurations.
+  - **Block-grained scheduler**: It selects the optimal scaling solutions and resource allocations that 
+  maximize overall accuracy under the optimization constraints.
+
+  ![](./readme_imgs/legoscaler.png)
+
+- **Evaluation**: 
+  - **Basic setting**: Our experiments compare 11 latest schedulers across 3 multi-application scenarios.
+  - **Major results**: LegoScaler improves the overall accuracy average by 29.04%, reduces memory footprint by 37.79%
+and energy consumption by 40.2%.
+
 ### 1.2 Hardware/software Requirements and Dependencies<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
 #### 1.2.1 Hardware Requirements<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
