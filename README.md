@@ -108,7 +108,7 @@ and energy consumption by 40.2%.
   You can obtain the source code for artifacts evaluation by the following command. **The code does not perform any malicious or destructive operations**.
 
   ```bash
-  git clone https://github.com/LINC-BIT/LegoScalerr.git
+  git clone https://github.com/LINC-BIT/LegoScaler.git
   ```
 
 #### 1.2.4 Install Dependencies<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
@@ -157,8 +157,7 @@ and energy consumption by 40.2%.
 
 - Data points generation:
   
-  We train a specific accuracy predictor for each model. For each predictor, we generate thousands of data points by randomly sampling the scaling configurations and measuring the corresponding accuracy. The generated data points are used to train the accuracy predictor. 
-  For each predictor, we generate thousands of data points using **[EdgeVisionBench](https://github.com/LINC-BIT/EdgeVisionBench)**, which automatically constructs evolving distribution at edge.
+  We train a specific accuracy predictor for each model. To train the predictor, we generate thousands of data points using **[EdgeVisionBench](https://github.com/LINC-BIT/EdgeVisionBench)**, which automatically constructs evolving distribution at edge.
 
 - Dataset for online scheduling:
   The following datasets are randomly selected for online scheduling experiments.
@@ -172,25 +171,25 @@ and energy consumption by 40.2%.
     <tbody>
       <tr>
         <td>Image classification</td>
-        <td>ImageNet</td>
+        <td>CIFAR-10, STL-10, Caltech-256, Imagenette, Fashion-MNIST</td>
       </tr>
     </tbody>
   <tbody>
       <tr>
         <td>Object Detection</td>
-        <td>COCO2017</td>
+        <td>COCO2017, VOC2012</td>
       </tr>
     </tbody>
   <tbody>
       <tr>
         <td>Text classification</td>
-        <td>AGNews</td>
+        <td>SST-2, IMDB, AGNews</td>
       </tr>
     </tbody>
   <tbody>
       <tr>
         <td>Visual question answering</td>
-        <td>VQAv2</td>
+        <td>VQAv2-C, VQAv2's last 2129 classes</td>
       </tr>
     </tbody>
   </table>
