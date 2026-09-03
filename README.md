@@ -122,6 +122,8 @@ and energy consumption by 40.2%.
 #### 1.2.5 About Dataset<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 - **Dataset for pre-training**:
+  After inserting FBS into blocks, the model is pre-trained on the following datasets.
+
   <table align="center">
     <thead>
       <tr>
@@ -156,7 +158,6 @@ and energy consumption by 40.2%.
   </table>
 
 - Data points generation:
-  
   We train a specific accuracy predictor for each model. To train the predictor, we generate thousands of data points using **[EdgeVisionBench](https://github.com/LINC-BIT/EdgeVisionBench)**, which automatically constructs evolving distribution at edge.
 
 - Dataset for online scheduling:
