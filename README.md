@@ -153,6 +153,46 @@ and energy consumption by 40.2%.
     </tbody>
   </table>
 
+- Data points generation:
+  
+  We train a specific accuracy predictor for each model. For each predictor, we generate thousands of data points by randomly sampling the scaling configurations and measuring the corresponding accuracy. The generated data points are used to train the accuracy predictor. 
+  For each predictor, we generate thousands of data points using **[EdgeVisionBench](https://github.com/LINC-BIT/EdgeVisionBench)**, which automatically constructs evolving distribution at edge.
+
+- Dataset for online scheduling:
+  The following datasets are randomly selected for online scheduling experiments.
+    <table align="center">
+    <thead>
+      <tr>
+        <th>Application</th>
+        <th>Dataset</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Image classification</td>
+        <td>ImageNet</td>
+      </tr>
+    </tbody>
+  <tbody>
+      <tr>
+        <td>Object Detection</td>
+        <td>COCO2017</td>
+      </tr>
+    </tbody>
+  <tbody>
+      <tr>
+        <td>Text classification</td>
+        <td>AGNews</td>
+      </tr>
+    </tbody>
+  <tbody>
+      <tr>
+        <td>Visual question answering</td>
+        <td>VQAv2</td>
+      </tr>
+    </tbody>
+  </table>
+
 ## 2. Evaluation Reproduction
 
 #### 2.1 Evaluation of Accuracy Predictor (Figure 7 in Section Ⅴ-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
