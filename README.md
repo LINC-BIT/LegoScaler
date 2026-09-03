@@ -1,47 +1,5 @@
-# EdgeScheduler
+# LegoScaler
+![](./readme_imgs/legoscaler.png)
 
-## Running Example
-
-运行如下命令：
-```bash
-bash examples/two_classification_apps/main.sh
-
-# 运行所有调度器：
-# for scheduler in uniform recl ekya eomu adainf; do
-#     python examples/two_classification_apps/main.py --scheduler $scheduler
-# done
-```
-
-其将按照以下事件顺序运行包括一个ResNet18应用的训练和推理作业和一个MobileNetV2应用的训练和推理作业：
-```python
-# examples/two_classification_apps/main.py
-
-apps_events=[
-    AppEvent(app_id="resnet18", timestamp=10, event_type=AppEventType.INFERENCE_START),
-    AppEvent(app_id="mobilenet", timestamp=20, event_type=AppEventType.INFERENCE_START),
-
-    AppEvent(app_id="mobilenet", timestamp=50, event_type=AppEventType.TRAINING_START),
-    AppEvent(app_id="resnet18", timestamp=60, event_type=AppEventType.TRAINING_START),
-
-    AppEvent(app_id="mobilenet", timestamp=150, event_type=AppEventType.TRAINING_FINISH),
-    AppEvent(app_id="resnet18", timestamp=150, event_type=AppEventType.TRAINING_FINISH),
-
-    AppEvent(app_id="resnet18", timestamp=150, event_type=AppEventType.INFERENCE_FINISH),
-    AppEvent(app_id="mobilenet", timestamp=150, event_type=AppEventType.INFERENCE_FINISH),
-
-
-    AppEvent(app_id="resnet18", timestamp=160, event_type=AppEventType.INFERENCE_START),
-    AppEvent(app_id="mobilenet", timestamp=170, event_type=AppEventType.INFERENCE_START),
-
-    AppEvent(app_id="mobilenet", timestamp=180, event_type=AppEventType.TRAINING_START),
-    AppEvent(app_id="resnet18", timestamp=190, event_type=AppEventType.TRAINING_START),
-
-    AppEvent(app_id="mobilenet", timestamp=300, event_type=AppEventType.TRAINING_FINISH),
-    AppEvent(app_id="resnet18", timestamp=300, event_type=AppEventType.TRAINING_FINISH),
-
-    AppEvent(app_id="resnet18", timestamp=300, event_type=AppEventType.INFERENCE_FINISH),
-    AppEvent(app_id="mobilenet", timestamp=300, event_type=AppEventType.INFERENCE_FINISH),
-]
-```
-
-目前支持Uniform、RECL、Ekya、EOMU、AdaInf五种训练调度器。其它调度器逐渐添加中。
+This repository contains the artifacts for the paper **"LegoScaler: Differentiated Block-grained Scaling
+for Mixed Inference and Retraining Jobs at Edge"**.
