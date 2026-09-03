@@ -7,6 +7,8 @@
 This repository contains the artifacts for the paper **"LegoScaler: Differentiated Block-grained Scaling
 for Mixed Inference and Retraining Jobs at Edge"**.
 
+## Outline (Evaluation process/workflow and Reusability)
+
 <a href="#1-artifact-overview">1. Artifact Overview</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-introduction">1.1 Introduction</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-hardwaresoftware-requirements-and-dependencies">1.2 Hardware/software Requirements and Dependencies</a><br>
