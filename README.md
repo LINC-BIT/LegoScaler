@@ -36,7 +36,7 @@ for Mixed Inference and Retraining Jobs at Edge"**.
 
 #### 1.2.4 Install Dependencies<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
-
+#### 1.2.5 About Dataset<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 
 
