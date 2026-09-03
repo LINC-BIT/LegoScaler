@@ -13,13 +13,13 @@ for Mixed Inference and Retraining Jobs at Edge"**.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#124-install-dependencies">1.2.4 Install Dependencies</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#127-about-dataset">1.2.5 About Dataset</a><br>
 <a href="#2-evaluation-reproduction">2. Evaluation Reproduction</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#221-figure-7-accuracy-predictor">2.2.1 Evaluation of Accuracy Predictor (Figure 7 in Section Ⅴ-B)</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#222-figure-8-knowledge-transfer">2.2.2 Evaluation of Knowledge Transfer (Figure 8 in Section Ⅴ-B)</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#223-figure-8-model-generator">2.2.3 Evaluation of Model Generator (Figure 8 in Section Ⅴ-B)</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#224-figure-8-excution-time-breakdown">2.2.4 Execution time breakdown (Figure 8 in Section Ⅴ-B)</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#225-figure-9-multi-job-scheduling">2.2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section Ⅴ-C)</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#226-figure-10-memory-footprint">2.2.6 Comparison of Memory Footprint (Figure 10 in Section Ⅴ-D)</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#227-table-3-energy-consumption">2.2.7 Comparison of Energy Consumption (Table Ⅲ in Section Ⅴ-D)</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-figure-7-accuracy-predictor">2.1 Evaluation of Accuracy Predictor (Figure 7 in Section Ⅴ-B)</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-figure-8-knowledge-transfer">2.2 Evaluation of Knowledge Transfer (Figure 8 in Section Ⅴ-B)</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-figure-8-model-generator">2.3 Evaluation of Model Generator (Figure 8 in Section Ⅴ-B)</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-figure-8-excution-time-breakdown">2.4 Execution Time breakdown (Figure 8 in Section Ⅴ-B)</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#25-figure-9-multi-job-scheduling">2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section Ⅴ-C)</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#26-figure-10-memory-footprint">2.6 Comparison of Memory Footprint (Figure 10 in Section Ⅴ-D)</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#27-table-3-energy-consumption">2.7 Comparison of Energy Consumption (Table Ⅲ in Section Ⅴ-D)</a><br>
 <a href="#3-reusability-">3. Reusability: Integrating LegoScaler with ...</a><br>
 
 ## 1. Artifact Overview
@@ -37,6 +37,23 @@ for Mixed Inference and Retraining Jobs at Edge"**.
 #### 1.2.4 Install Dependencies<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 #### 1.2.5 About Dataset<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+## 2. Evaluation Reproduction
+
+#### 2.1 Evaluation of Accuracy Predictor (Figure 7 in Section Ⅴ-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+#### 2.2 Evaluation of Knowledge Transfer (Figure 8 in Section Ⅴ-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+#### 2.3 Evaluation of Model Generator (Figure 8 in Section Ⅴ-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+#### 2.4 Execution Time breakdown (Figure 8 in Section Ⅴ-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+#### 2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section Ⅴ-C)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+#### 2.6 Comparison of Memory Footprint (Figure 10 in Section Ⅴ-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+#### 2.7 Comparison of Energy Consumption (Table Ⅲ in Section Ⅴ-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
 
 
 
