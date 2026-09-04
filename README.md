@@ -309,7 +309,31 @@ The resource requirements and outputs are listed below:
 
 #### 2.4 Execution Time breakdown (Figure 8-c in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
+Commands for testing the execution time:
+```bash
+cd EdgeScheduler
 
+python schedulers/examples/two_classification_apps/execution_time.py
+```
+
+The resource requirements and outputs are listed below:
+
+<table align="center">
+    <thead>
+      <tr>
+        <th>Resource Requirements</th>
+        <th>Example Running Outputs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2 hours<br>10GB memory<br>25GB disk space</td>
+        <td>
+          <img src="./readme_imgs/fig_8_2.png" width="300">
+        </td>
+      </tr>
+    </tbody>
+</table>
 
 #### 2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section V-C)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
@@ -333,7 +357,7 @@ The resource requirements and outputs are listed below:
       <tr>
         <td>1 hour<br>20GB memory<br>50GB disk space</td>
         <td>
-          <img src="./readme_imgs/fig_9.png" width="250">
+          <img src="./readme_imgs/fig_8_3.png" width="250">
         </td>
       </tr>
     </tbody>
