@@ -299,9 +299,33 @@ The resource requirements and outputs are listed below:
 
 #### 2.7 Comparison of Energy Consumption (Table Ⅲ in Section Ⅴ-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
+During the online scheduling experiments, the energy consumption of each scheduler is recorded. 
+```bash
+cd EdgeScheduler
 
+# run the online scheduling
+python schedulers/examples/two_classification_apps/main.py
 
+# analysis and statistics of recorded data
+python schedulers/examples/two_classification_apps/draw_pics/energy_consumption.py
+```
 
+<table align="center">
+    <thead>
+      <tr>
+        <th>Resource Requirements</th>
+        <th>Example Running Outputs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1 hour<br>20GB memory<br>50GB disk space</td>
+        <td>
+          <img src="./readme_imgs/table_3.png" width="250">
+        </td>
+      </tr>
+    </tbody>
+</table>
 
 
 
