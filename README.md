@@ -113,7 +113,7 @@ and energy consumption by 40.2%.
 
 #### 1.2.4 Install Dependencies<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
-  You can isntall the required dependencies by the following command. .
+  You can isntall the required dependencies by the following command.
 
   ```bash
   pip install -r requirements.txt
@@ -157,10 +157,10 @@ and energy consumption by 40.2%.
     </tbody>
   </table>
 
-- Data points generation:
+- **Data points generation**:
   We train a specific accuracy predictor for each model. To train the predictor, we generate thousands of data points using **[EdgeVisionBench](https://github.com/LINC-BIT/EdgeVisionBench)**, which automatically constructs evolving distribution at edge.
 
-- Dataset for online scheduling:
+- **Dataset for online scheduling**:
   The following datasets are randomly selected for online scheduling experiments.
     <table align="center">
     <thead>
@@ -198,6 +198,38 @@ and energy consumption by 40.2%.
 ## 2. Evaluation Reproduction
 
 #### 2.1 Evaluation of Accuracy Predictor (Figure 7 in Section Ⅴ-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+1. Generate data points for training accuracy predictor:
+```
+cd EdgeScheduler
+
+python schedulers/predictor/scaling_law/cnn/gen_scaling_law_data_points.py
+```
+
+2. Train and evaluate the accuracy predictor:
+```
+python schedulers/predictor/scaling_law/scaling_law_trial/two_branch.py
+```
+
+The resource requirements and outputs are listed below:
+
+<table align="center">
+    <thead>
+      <tr>
+        <th>Resource Requirements</th>
+        <th>Example Running Outputs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>10 hours<br>10GB memory<br>25GB disk space</td>
+        <td>
+          <img src="./readme_imgs/fig_7_1.png" alt="运行输出1" width="210">
+          <img src="./readme_imgs/fig_7_2.png" alt="运行输出2" width="300">
+        </td>
+      </tr>
+    </tbody>
+</table>
 
 #### 2.2 Evaluation of Knowledge Transfer (Figure 8 in Section Ⅴ-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
