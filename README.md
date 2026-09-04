@@ -222,10 +222,10 @@ The resource requirements and outputs are listed below:
     </thead>
     <tbody>
       <tr>
-        <td>10 hours<br>10GB memory<br>25GB disk space</td>
+        <td>2 hours<br>10GB memory<br>25GB disk space</td>
         <td>
-          <img src="./readme_imgs/fig_7_1.png" alt="运行输出1" width="210">
-          <img src="./readme_imgs/fig_7_2.png" alt="运行输出2" width="300">
+          <img src="./readme_imgs/fig_7_1.png" width="250">
+          <img src="./readme_imgs/fig_7_2.png" width="300">
         </td>
       </tr>
     </tbody>
@@ -239,7 +239,63 @@ The resource requirements and outputs are listed below:
 
 #### 2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section Ⅴ-C)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
+Commands for running one scenario:
+```
+cd EdgeScheduler
+
+python schedulers/examples/two_classification_apps/main.py
+```
+
+The resource requirements and outputs are listed below:
+
+<table align="center">
+    <thead>
+      <tr>
+        <th>Resource Requirements</th>
+        <th>Example Running Outputs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1 hour<br>20GB memory<br>50GB disk space</td>
+        <td>
+          <img src="./readme_imgs/fig_9.png" width="250">
+        </td>
+      </tr>
+    </tbody>
+</table>
+
 #### 2.6 Comparison of Memory Footprint (Figure 10 in Section Ⅴ-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+During the online scheduling experiments, the memory footprint of each scheduler is recorded. 
+```
+cd EdgeScheduler
+
+# run the online scheduling
+python schedulers/examples/two_classification_apps/main.py
+
+# draw the memory footprint comparison figure
+python schedulers/examples/two_classification_apps/draw_pics/memory_footprint.py
+```
+
+The resource requirements and outputs are listed below:
+
+<table align="center">
+    <thead>
+      <tr>
+        <th>Resource Requirements</th>
+        <th>Example Running Outputs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1 hour<br>20GB memory<br>50GB disk space</td>
+        <td>
+          <img src="./readme_imgs/fig_10.png" width="250">
+        </td>
+      </tr>
+    </tbody>
+</table>
 
 #### 2.7 Comparison of Energy Consumption (Table Ⅲ in Section Ⅴ-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
