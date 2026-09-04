@@ -200,14 +200,14 @@ and energy consumption by 40.2%.
 #### 2.1 Evaluation of Accuracy Predictor (Figure 7 in Section Ⅴ-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 1. Generate data points for training accuracy predictor:
-```
+```bash
 cd EdgeScheduler
 
 python schedulers/predictor/scaling_law/cnn/gen_scaling_law_data_points.py
 ```
 
 2. Train and evaluate the accuracy predictor:
-```
+```bash
 python schedulers/predictor/scaling_law/scaling_law_trial/two_branch.py
 ```
 
@@ -240,7 +240,7 @@ The resource requirements and outputs are listed below:
 #### 2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section Ⅴ-C)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 Commands for running one scenario:
-```
+```bash
 cd EdgeScheduler
 
 python schedulers/examples/two_classification_apps/main.py
@@ -268,7 +268,7 @@ The resource requirements and outputs are listed below:
 #### 2.6 Comparison of Memory Footprint (Figure 10 in Section Ⅴ-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 During the online scheduling experiments, the memory footprint of each scheduler is recorded. 
-```
+```bash
 cd EdgeScheduler
 
 # run the online scheduling
