@@ -19,9 +19,9 @@ for Mixed Inference and Retraining Jobs at Edge"**.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#125-about-dataset">1.2.5 About Dataset</a><br>
 <a href="#2-evaluation-reproduction">2. Evaluation Reproduction</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-evaluation-of-accuracy-predictor-figure-7-in-section-v-b">2.1 Evaluation of Accuracy Predictor (Figure 7 in Section V-B)</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-evaluation-of-knowledge-transfer-figure-8-in-section-v-b">2.2 Evaluation of Knowledge Transfer (Figure 8 in Section V-B)</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-evaluation-of-model-generator-figure-8-in-section-v-b">2.3 Evaluation of Model Generator (Figure 8 in Section V-B)</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-execution-time-breakdown-figure-8-in-section-v-b">2.4 Execution Time breakdown (Figure 8 in Section V-B)</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-evaluation-of-knowledge-transfer-figure-8-a-in-section-v-b">2.2 Evaluation of Knowledge Transfer (Figure 8-a in Section V-B)</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-evaluation-of-model-generator-figure-8-b-in-section-v-b">2.3 Evaluation of Model Generator (Figure 8-b in Section V-B)</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-execution-time-breakdown-figure-8-c-in-section-v-b">2.4 Execution Time breakdown (Figure 8-c in Section V-B)</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#25-evaluation-of-multi-job-scheduling-at-edge-figure-9-in-section-v-c">2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section V-C)</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#26-comparison-of-memory-footprint-figure-10-in-section-v-d">2.6 Comparison of Memory Footprint (Figure 10 in Section V-D)</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#27-comparison-of-energy-consumption-table-3-in-section-v-d">2.7 Comparison of Energy Consumption (Table 3 in Section V-D)</a><br>
@@ -231,11 +231,85 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-#### 2.2 Evaluation of Knowledge Transfer (Figure 8 in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+#### 2.2 Evaluation of Knowledge Transfer (Figure 8-a in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
-#### 2.3 Evaluation of Model Generator (Figure 8 in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+Commands for 4 knowledge transfer strategies:
+```bash
+cd EdgeScheduler
 
-#### 2.4 Execution Time breakdown (Figure 8 in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+# no feedback
+python schedulers/examples/two_classification_apps/main.py --knowledge_transfer no
+
+# direct replacement
+python schedulers/examples/two_classification_apps/main.py --knowledge_transfer direct
+
+# layer-wise feedback
+python schedulers/examples/two_classification_apps/main.py --knowledge_transfer layer
+
+# neuron indexes
+python schedulers/examples/two_classification_apps/main.py --knowledge_transfer neuron
+```
+
+The resource requirements and outputs are listed below:
+
+<table align="center">
+    <thead>
+      <tr>
+        <th>Resource Requirements</th>
+        <th>Example Running Outputs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2 hours<br>10GB memory<br>25GB disk space</td>
+        <td>
+          <img src="./readme_imgs/fig_8_1.png" width="250">
+        </td>
+      </tr>
+    </tbody>
+</table>
+
+#### 2.3 Evaluation of Model Generator (Figure 8-b in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+Commands for 4 model generation strategies (how to generate blocks):
+```bash
+cd EdgeScheduler
+
+# blocks with the most unimportant neurons
+python schedulers/examples/two_classification_apps/main.py --model_generate unimportant
+
+# blocks with randomly selected neurons
+python schedulers/examples/two_classification_apps/main.py --model_generate random
+
+# blocks with the most important neurons in source data
+python schedulers/examples/two_classification_apps/main.py --model_generate source
+
+# blocks with the most important neurons in current input data
+python schedulers/examples/two_classification_apps/main.py --model_generate current
+```
+
+The resource requirements and outputs are listed below:
+
+<table align="center">
+    <thead>
+      <tr>
+        <th>Resource Requirements</th>
+        <th>Example Running Outputs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2 hours<br>10GB memory<br>25GB disk space</td>
+        <td>
+          <img src="./readme_imgs/fig_8_2.png" width="250">
+        </td>
+      </tr>
+    </tbody>
+</table>
+
+#### 2.4 Execution Time breakdown (Figure 8-c in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+
 
 #### 2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section V-C)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
