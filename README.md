@@ -496,7 +496,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
   # There are 4 event types: INFERENCE_START, INFERENCE_FINISH, TRAINING_START, TRAINING_FINISH
   apps_events=[AppEvent(app_id="XXX", timestamp=0, event_type=AppEventType.INFERENCE_START), ...]
   ```
- 
+
 ### 3.2 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 
