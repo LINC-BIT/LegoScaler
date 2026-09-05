@@ -27,7 +27,7 @@ for Mixed Inference and Retraining Jobs at Edge"**.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#27-comparison-of-energy-consumption-table-3-in-section-v-d">2.7 Comparison of Energy Consumption (Table 3 in Section V-D)</a><br>
 <a href="#3-reusability-integrating-legoscaler-with-models-and-edge-schedulers">3. Reusability: Integrating LegoScaler with Models and Edge Schedulers</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-integrating-different-models">3.1 Integrating Different Models</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-integrating-different-edge-schedulers">3.1 Integrating Different Edge Schedulers</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-integrating-different-edge-schedulers">3.2 Integrating Different Edge Schedulers</a><br>
 
 ## 1. Artifact Overview
 
@@ -443,7 +443,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     model = ViTModel.from_pretrained('google/vit-base-patch16-224-in21k')
     ```
 
-  - Step 2: Add FBS insertion in the class `FBSModelConverter`:
+  - Step 2: Add FBS insertion in the class `FBSModelConverter` (already exists):
     ```bash
     class FBSModelConverter:
         def convert_model(self, model):
