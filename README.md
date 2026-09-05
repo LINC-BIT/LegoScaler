@@ -486,9 +486,9 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     ```
     
   - Step 3: Add the model's application in `main.py`.
-  ```bash
-  apps = dict(XXX=ray.remote(Application_XXX).remote('XXX', ...), ...)
-  ```
+    ```bash
+    apps = dict(XXX=ray.remote(Application_XXX).remote('XXX', ...), ...)
+    ```
 
 ### 3.2 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
