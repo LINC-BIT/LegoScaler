@@ -501,7 +501,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
 You can integrate different edge schedulers into LegoScaler.
 
-- **Inference-oriented schedulers** (7 schedulers):
+- **Inference-oriented schedulers (7 schedulers)**:
 
   (1) **AdaInf**: Interleave incremental retraining with inference based on the severity of data drift. 
   To this scheduler, you can set the `--scheduler` argument to `AdaInf` in the command line.
@@ -545,7 +545,7 @@ You can integrate different edge schedulers into LegoScaler.
   python schedulers/examples/two_classification_apps/main.py --scheduler PSA
   ```
   
-- **Retraining-oriented schedulers** (4 schedulers):
+- **Retraining-oriented schedulers (4 schedulers)**:
 
   (1) **AdaEvo**: Schedule multiple retraining jobs based on urgency.
   To this scheduler, you can set the `--scheduler` argument to `AdaEvo` in the command line.
