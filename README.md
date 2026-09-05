@@ -25,7 +25,7 @@ for Mixed Inference and Retraining Jobs at Edge"**.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#25-evaluation-of-multi-job-scheduling-at-edge-figure-9-in-section-v-c">2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section V-C)</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#26-comparison-of-memory-footprint-figure-10-in-section-v-d">2.6 Comparison of Memory Footprint (Figure 10 in Section V-D)</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#27-comparison-of-energy-consumption-table-3-in-section-v-d">2.7 Comparison of Energy Consumption (Table 3 in Section V-D)</a><br>
-<a href="#3-reusability-">3. Reusability: Integrating LegoScaler with ...</a><br>
+<a href="#3-reusability-integrating-legoscaler-with-models-and-edge-schedulers">3. Reusability: Integrating LegoScaler with Models and Edge Schedulers</a><br>
 
 ## 1. Artifact Overview
 
@@ -197,7 +197,7 @@ and energy consumption by 40.2%.
 
 ## 2. Evaluation Reproduction
 
-#### 2.1 Evaluation of Accuracy Predictor (Figure 7 in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.1 Evaluation of Accuracy Predictor (Figure 7 in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 1. Generate data points for training accuracy predictor:
 ```bash
@@ -231,7 +231,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-#### 2.2 Evaluation of Knowledge Transfer (Figure 8-a in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.2 Evaluation of Knowledge Transfer (Figure 8-a in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 Commands for 4 knowledge transfer strategies:
 ```bash
@@ -269,7 +269,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-#### 2.3 Evaluation of Model Generator (Figure 8-b in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.3 Evaluation of Model Generator (Figure 8-b in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 Commands for 4 model generation strategies (how to generate blocks):
 ```bash
@@ -307,7 +307,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-#### 2.4 Execution Time breakdown (Figure 8-c in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.4 Execution Time breakdown (Figure 8-c in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 Commands for testing the execution time:
 ```bash
@@ -335,7 +335,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-#### 2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section V-C)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section V-C)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 Commands for running one scenario:
 ```bash
@@ -363,7 +363,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-#### 2.6 Comparison of Memory Footprint (Figure 10 in Section V-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.6 Comparison of Memory Footprint (Figure 10 in Section V-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 During the online scheduling experiments, the memory footprint of each scheduler is recorded. 
 ```bash
@@ -395,7 +395,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-#### 2.7 Comparison of Energy Consumption (Table 3 in Section V-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.7 Comparison of Energy Consumption (Table 3 in Section V-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 During the online scheduling experiments, the energy consumption of each scheduler is recorded. 
 ```bash
@@ -424,6 +424,38 @@ python schedulers/examples/two_classification_apps/draw_pics/energy_consumption.
       </tr>
     </tbody>
 </table>
+
+## 3. Reusability: Integrating LegoScaler with Models and Edge Schedulers
+
+LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
+**edge schedulers** (e.g. inference-oriented and retraining-oriented schedulers).
+
+### 3.1 Integrating different models <img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+- **Detailed integration steps:**
+  - Step 1: Create a function and load the model's pre-trained weights.
+    ```bash
+    model = XXX.from_pretrained('/path/to/pretrained/weights')
+    
+    # For example, for ViT-B/16 from HuggingFace:
+    model = ViTModel.from_pretrained('google/vit-base-patch16-224-in21k')
+    ```
+
+  - Step 2: Add FBS insertion in the class `FBSModelConverter`:
+    ```bash
+    class FBSModelConverter:
+        def convert_model(self, model):
+            if self.model_type == 'XXX':
+              for name, module in model.named_children():
+                  # Recognize the block according to its name or type
+                  if isinstance(module, XXXBlock):
+                      # Insert FBS into the block
+                      fbs_module = FBS(...)
+                      setattr(model, name, fbs_module)
+    ```
+
+### 3.2 Integrating different edge schedulers <img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
 
 
 
