@@ -434,7 +434,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
 ### 3.1 Integrating Different Models<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
-- **Detailed integration steps:**
+- **Offline integration:**
   - Step 1: Create a function and load the model's pre-trained weights.
     ```bash
     model = XXX.from_pretrained('/path/to/pretrained/weights')
@@ -465,6 +465,30 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     trainer = FBSJointTrainer(num_epochs=..., model_type='XXX', lr=..., train_loader=train_loader, test_loader=test_loader, ...)
     trainer.train()
     ``` 
+
+- **Online integration**:
+  - Step 1: Create a class `Application_XXX` inherited from `ApplicationActor`.
+    ```bash
+    class Application_XXX(ApplicationActor)
+    ```
+  
+  - Step 2: Implement its functions for initialization and data loading
+    ```bash
+    # Initialize the model
+    def init_model(self):
+        model_state_dict_path = '/path/to/pretrained/weights'
+        model = torch.load(model_state_dict_path)
+        return model
+    
+    # Load the dataset
+    def def get_dataloader_func(self):
+        dataloaders_func = [get_XXX_dataloader, ...]
+    ```
+    
+  - Step 3: Add the model's application in `main.py`.
+  ```bash
+  apps = dict(XXX=ray.remote(Application_XXX).remote('XXX', ...), ...)
+  ```
 
 ### 3.2 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
