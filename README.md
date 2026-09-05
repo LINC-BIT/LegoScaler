@@ -432,7 +432,7 @@ python schedulers/examples/two_classification_apps/draw_pics/energy_consumption.
 LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 **edge schedulers** (e.g. inference-oriented and retraining-oriented schedulers).
 
-### 3.1 Integrating Different Models <img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 3.1 Integrating Different Models<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 - **Detailed integration steps:**
   - Step 1: Create a function and load the model's pre-trained weights.
@@ -456,7 +456,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
                       setattr(model, name, fbs_module)
     ```
 
-### 3.2 Integrating Different Edge Schedulers <img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 3.2 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 
 
