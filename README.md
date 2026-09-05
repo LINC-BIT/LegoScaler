@@ -443,7 +443,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     model = ViTModel.from_pretrained('google/vit-base-patch16-224-in21k')
     ```
 
-  - Step 2: Add FBS insertion in the class `FBSModelConverter` (already exists):
+  - Step 2: Add FBS insertion in the class `FBSModelConverter` (already exists).
     ```bash
     class FBSModelConverter:
         def convert_model(self, model):
@@ -455,6 +455,16 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
                       fbs_module = FBS(...)
                       setattr(model, name, fbs_module)
     ```
+  
+  - Step 3: Fine-tune the model on the pre-training dataset through the class `FBSJointTrainer`.
+    ```bash
+    # load the dataset
+    train_loader, test_loader = prepare_XXX_data(batch_size=..., data_dir='/path/to/dataset')
+    
+    # define the training parameters
+    trainer = FBSJointTrainer(num_epochs=..., model_type='XXX', lr=..., train_loader=train_loader, test_loader=test_loader, ...)
+    trainer.train()
+    ``` 
 
 ### 3.2 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
