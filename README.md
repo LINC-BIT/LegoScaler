@@ -329,7 +329,7 @@ The resource requirements and outputs are listed below:
       <tr>
         <td>2 hours<br>10GB memory<br>25GB disk space</td>
         <td>
-          <img src="./readme_imgs/fig_8_2.png" width="300">
+          <img src="./readme_imgs/fig_8_3.png" width="300">
         </td>
       </tr>
     </tbody>
@@ -357,7 +357,7 @@ The resource requirements and outputs are listed below:
       <tr>
         <td>1 hour<br>20GB memory<br>50GB disk space</td>
         <td>
-          <img src="./readme_imgs/fig_8_3.png" width="250">
+          <img src="./readme_imgs/fig_9.png" width="250">
         </td>
       </tr>
     </tbody>
