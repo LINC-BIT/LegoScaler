@@ -499,6 +499,52 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
 ### 3.2 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
+You can integrate different edge schedulers into LegoScaler.
 
+- **Inference-oriented schedulers** (7 schedulers):
+
+  (1) **AdaInf**: Interleave incremental retraining with inference based on the severity of data drift. 
+  To this scheduler, you can set the `--scheduler` argument to `AdaInf` in the command line.
+  ```bash
+  python schedulers/examples/two_classification_apps/main.py --scheduler AdaInf
+  ```
+
+  (2) **Corun**: Execute mixed jobs concurrently via spatial multiplexing.
+  To this scheduler, you can set the `--scheduler` argument to `Corun` in the command line.
+  ```bash
+  python schedulers/examples/two_classification_apps/main.py --scheduler Corun
+  ```
+  
+  (3) **EdgeNN**: Accelerate inference jobs through semantic-aware memory management.
+  To this scheduler, you can set the `--scheduler` argument to `EdgeNN` in the command line.
+  ```bash
+  python schedulers/examples/two_classification_apps/main.py --scheduler EdgeNN
+  ```
+
+  (4) **ACBatch**: Optimize batching strategies via dynamic programming.
+  To this scheduler, you can set the `--scheduler` argument to `ACBatch` in the command line.
+  ```bash
+  python schedulers/examples/two_classification_apps/main.py --scheduler ACBatch
+  ```
+
+  (5) **MMSL**: Decomposes inference jobs via model partitioning.
+  To this scheduler, you can set the `--scheduler` argument to `MMSL` in the command line.
+  ```bash
+  python schedulers/examples/two_classification_apps/main.py --scheduler MMSL
+  ```
+
+  (6) **TS-MITO**: Optimize model selection and job offloading based on reinforcement learning.
+  To this scheduler, you can set the `--scheduler` argument to `TS-MITO` in the command line.
+  ```bash
+  python schedulers/examples/two_classification_apps/main.py --scheduler TS-MITO
+  ```
+
+  (7) **PSA**: Optimize model branch selection and communication resource allocation.
+  To this scheduler, you can set the `--scheduler` argument to `PSA` in the command line.
+  ```bash
+  python schedulers/examples/two_classification_apps/main.py --scheduler PSA
+  ```
+  
+- **Retraining-oriented schedulers** (4 schedulers):
 
 
