@@ -28,6 +28,10 @@ for Mixed Inference and Retraining Jobs at Edge"**.
 <a href="#3-reusability-integrating-legoscaler-with-models-and-edge-schedulers">3. Reusability: Integrating LegoScaler with Models and Edge Schedulers</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-integrating-different-models">3.1 Integrating Different Models</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-integrating-different-edge-schedulers">3.2 Integrating Different Edge Schedulers</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#321-integrating-inference-oriented-schedulers">3.2.1 Integrating Inference-oriented Schedulers</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#322-integrating-retraining-oriented-schedulers">3.2.2 Integrating Retraining-oriented Schedulers</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#323-integrating-other-edge-schedulers">3.2.3 Integrating Other Schedulers</a><br>
+
 
 ## 1. Artifact Overview
 
@@ -199,7 +203,7 @@ and energy consumption by 40.2%.
 
 ## 2. Evaluation Reproduction
 
-### 2.1 Evaluation of Accuracy Predictor (Figure 7 in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.1 Evaluation of Accuracy Predictor (Figure 7 in Section V-B)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
 1. Generate data points for training accuracy predictor:
 ```bash
@@ -233,7 +237,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-### 2.2 Evaluation of Knowledge Transfer (Figure 8-a in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.2 Evaluation of Knowledge Transfer (Figure 8-a in Section V-B)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
 Commands for 4 knowledge transfer strategies:
 ```bash
@@ -271,7 +275,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-### 2.3 Evaluation of Model Generator (Figure 8-b in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.3 Evaluation of Model Generator (Figure 8-b in Section V-B)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
 Commands for 4 model generation strategies (how to generate blocks):
 ```bash
@@ -309,7 +313,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-### 2.4 Execution Time breakdown (Figure 8-c in Section V-B)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.4 Execution Time breakdown (Figure 8-c in Section V-B)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
 Commands for testing the execution time:
 ```bash
@@ -337,7 +341,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-### 2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section V-C)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section V-C)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
 Commands for running one scenario:
 ```bash
@@ -365,7 +369,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-### 2.6 Comparison of Memory Footprint (Figure 10 in Section V-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.6 Comparison of Memory Footprint (Figure 10 in Section V-D)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
 During the online scheduling experiments, the memory footprint of each scheduler is recorded. 
 ```bash
@@ -397,7 +401,7 @@ The resource requirements and outputs are listed below:
     </tbody>
 </table>
 
-### 2.7 Comparison of Energy Consumption (Table 3 in Section V-D)<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 2.7 Comparison of Energy Consumption (Table 3 in Section V-D)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
 During the online scheduling experiments, the energy consumption of each scheduler is recorded. 
 ```bash
@@ -432,7 +436,7 @@ python schedulers/examples/two_classification_apps/draw_pics/energy_consumption.
 LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 **edge schedulers** (e.g. inference-oriented and retraining-oriented schedulers).
 
-### 3.1 Integrating Different Models<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 3.1 Integrating Different Models<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
 - **Offline integration:**
   - Step 1: Create a function and load the model's pre-trained weights.
@@ -497,76 +501,80 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
   apps_events=[AppEvent(app_id="XXX", timestamp=0, event_type=AppEventType.INFERENCE_START), ...]
   ```
 
-### 3.2 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+### 3.2 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
-You can integrate different edge schedulers into LegoScaler.
+#### 3.2.1 Integrating Inference-oriented Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
-- **Inference-oriented schedulers (7 schedulers)**:
+  - **AdaInf**: Interleave incremental retraining with inference based on the severity of data drift. 
+    To this scheduler, you can set the `--scheduler` argument to `AdaInf` in the command line.
+    ```bash
+    python schedulers/examples/two_classification_apps/main.py --scheduler AdaInf
+    ```
 
-  (1) **AdaInf**: Interleave incremental retraining with inference based on the severity of data drift. 
-  To this scheduler, you can set the `--scheduler` argument to `AdaInf` in the command line.
-  ```bash
-  python schedulers/examples/two_classification_apps/main.py --scheduler AdaInf
-  ```
-
-  (2) **Corun**: Execute mixed jobs concurrently via spatial multiplexing.
-  To this scheduler, you can set the `--scheduler` argument to `Corun` in the command line.
-  ```bash
-  python schedulers/examples/two_classification_apps/main.py --scheduler Corun
-  ```
+  - **Corun**: Execute mixed jobs concurrently via spatial multiplexing.
+    To this scheduler, you can set the `--scheduler` argument to `Corun` in the command line.
+    ```bash
+    python schedulers/examples/two_classification_apps/main.py --scheduler Corun
+    ```
   
-  (3) **EdgeNN**: Accelerate inference jobs through semantic-aware memory management.
-  To this scheduler, you can set the `--scheduler` argument to `EdgeNN` in the command line.
-  ```bash
-  python schedulers/examples/two_classification_apps/main.py --scheduler EdgeNN
-  ```
+  - **EdgeNN**: Accelerate inference jobs through semantic-aware memory management.
+    To this scheduler, you can set the `--scheduler` argument to `EdgeNN` in the command line.
+    ```bash
+    python schedulers/examples/two_classification_apps/main.py --scheduler EdgeNN
+    ```
 
-  (4) **ACBatch**: Optimize batching strategies via dynamic programming.
-  To this scheduler, you can set the `--scheduler` argument to `ACBatch` in the command line.
-  ```bash
-  python schedulers/examples/two_classification_apps/main.py --scheduler ACBatch
-  ```
+  - **ACBatch**: Optimize batching strategies via dynamic programming.
+    To this scheduler, you can set the `--scheduler` argument to `ACBatch` in the command line.
+    ```bash
+    python schedulers/examples/two_classification_apps/main.py --scheduler ACBatch
+    ```
 
-  (5) **MMSL**: Decomposes inference jobs via model partitioning.
-  To this scheduler, you can set the `--scheduler` argument to `MMSL` in the command line.
-  ```bash
-  python schedulers/examples/two_classification_apps/main.py --scheduler MMSL
-  ```
+  - **MMSL**: Decomposes inference jobs via model partitioning.
+    To this scheduler, you can set the `--scheduler` argument to `MMSL` in the command line.
+    ```bash
+    python schedulers/examples/two_classification_apps/main.py --scheduler MMSL
+    ```
 
-  (6) **TS-MITO**: Optimize model selection and job offloading based on reinforcement learning.
-  To this scheduler, you can set the `--scheduler` argument to `TS-MITO` in the command line.
-  ```bash
-  python schedulers/examples/two_classification_apps/main.py --scheduler TS-MITO
-  ```
+  - **TS-MITO**: Optimize model selection and job offloading based on reinforcement learning.
+    To this scheduler, you can set the `--scheduler` argument to `TS-MITO` in the command line.
+    ```bash
+    python schedulers/examples/two_classification_apps/main.py --scheduler TS-MITO
+    ```
 
-  (7) **PSA**: Optimize model branch selection and communication resource allocation.
-  To this scheduler, you can set the `--scheduler` argument to `PSA` in the command line.
-  ```bash
-  python schedulers/examples/two_classification_apps/main.py --scheduler PSA
-  ```
-  
-- **Retraining-oriented schedulers (4 schedulers)**:
+  - **PSA**: Optimize model branch selection and communication resource allocation.
+    To this scheduler, you can set the `--scheduler` argument to `PSA` in the command line.
+    ```bash
+    python schedulers/examples/two_classification_apps/main.py --scheduler PSA
+    ```
 
-  (1) **AdaEvo**: Schedule multiple retraining jobs based on urgency.
-  To this scheduler, you can set the `--scheduler` argument to `AdaEvo` in the command line.
-  ```bash
-  python schedulers/examples/two_classification_apps/main.py --scheduler AdaEvo
-  ```
+#### 3.2.2 Integrating Retraining-oriented Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+  - **AdaEvo**: Schedule multiple retraining jobs based on urgency.
+    To this scheduler, you can set the `--scheduler` argument to `AdaEvo` in the command line.
+    ```bash
+    python schedulers/examples/two_classification_apps/main.py --scheduler AdaEvo
+    ```
     
-  (2) **EdgeOL**: Improve the computational efficiency of retraining jobs according to Centered Kernel Alignment (CKA) similarity.
-  To this scheduler, you can set the `--scheduler` argument to `EdgeOL` in the command line.
-  ```bash
-  python schedulers/examples/two_classification_apps/main.py --scheduler EdgeOL
-  ```
+  - **EdgeOL**: Improve the computational efficiency of retraining jobs according to Centered Kernel Alignment (CKA) similarity.
+    To this scheduler, you can set the `--scheduler` argument to `EdgeOL` in the command line.
+    ```bash
+    python schedulers/examples/two_classification_apps/main.py --scheduler EdgeOL
+    ```
     
-  (3) **SRS**: Insert retraining jobs into the Directed Acyclic Graph (DAG) of job requests.
-  To this scheduler, you can set the `--scheduler` argument to `SRS` in the command line.
-  ```bash
-  python schedulers/examples/two_classification_apps/main.py --scheduler SRS
-  ```
+  - **SRS**: Insert retraining jobs into the Directed Acyclic Graph (DAG) of job requests.
+    To this scheduler, you can set the `--scheduler` argument to `SRS` in the command line.
+    ```bash
+    python schedulers/examples/two_classification_apps/main.py --scheduler SRS
+    ```
         
-  (4) **EdgeTA**: Perform neuron-grained model scaling and scheduling for retraining jobs.
-  To this scheduler, you can set the `--scheduler` argument to `EdgeTA` in the command line.
-  ```bash
-  python schedulers/examples/two_classification_apps/main.py --scheduler EdgeTA
-  ```
+  - **EdgeTA**: Perform neuron-grained model scaling and scheduling for retraining jobs.
+    To this scheduler, you can set the `--scheduler` argument to `EdgeTA` in the command line.
+    ```bash
+    python schedulers/examples/two_classification_apps/main.py --scheduler EdgeTA
+    ```
+
+#### 3.2.3 Integrating Other Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+You can integrate other edge schedulers into LegoScaler by the following steps:
+
+- Step 1: 
