@@ -569,4 +569,4 @@ You can integrate different edge schedulers into LegoScaler.
   To this scheduler, you can set the `--scheduler` argument to `EdgeTA` in the command line.
   ```bash
   python schedulers/examples/two_classification_apps/main.py --scheduler EdgeTA
-```
+  ```
