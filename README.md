@@ -547,4 +547,26 @@ You can integrate different edge schedulers into LegoScaler.
   
 - **Retraining-oriented schedulers** (4 schedulers):
 
-
+  (1) **AdaEvo**: Schedule multiple retraining jobs based on urgency.
+  To this scheduler, you can set the `--scheduler` argument to `AdaEvo` in the command line.
+  ```bash
+  python schedulers/examples/two_classification_apps/main.py --scheduler AdaEvo
+  ```
+    
+  (2) **EdgeOL**: Improve the computational efficiency of retraining jobs according to Centered Kernel Alignment (CKA) similarity.
+  To this scheduler, you can set the `--scheduler` argument to `EdgeOL` in the command line.
+  ```bash
+  python schedulers/examples/two_classification_apps/main.py --scheduler EdgeOL
+  ```
+    
+  (3) **SRS**: Insert retraining jobs into the Directed Acyclic Graph (DAG) of job requests.
+  To this scheduler, you can set the `--scheduler` argument to `SRS` in the command line.
+  ```bash
+  python schedulers/examples/two_classification_apps/main.py --scheduler SRS
+  ```
+        
+  (4) **EdgeTA**: Perform neuron-grained model scaling and scheduling for retraining jobs.
+  To this scheduler, you can set the `--scheduler` argument to `EdgeTA` in the command line.
+  ```bash
+  python schedulers/examples/two_classification_apps/main.py --scheduler EdgeTA
+```
