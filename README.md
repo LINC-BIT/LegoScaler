@@ -448,7 +448,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
             if self.model_type == 'XXX':
               for name, module in model.named_children():
                   # Recognize the block according to its name or type
-                  if isinstance(module, XXXBlock):
+                  if isinstance(module, XXXBlock) or name in ['block1', 'block2', ...]:
                       # Insert FBS into the block
                       fbs_module = FBS(...)
                       setattr(model, name, fbs_module)
