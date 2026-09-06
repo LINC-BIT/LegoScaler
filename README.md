@@ -259,7 +259,7 @@ python examples/two_classification_apps/main.py --knowledge_transfer direct
 # layer-wise feedback
 python examples/two_classification_apps/main.py --knowledge_transfer layer
 
-# neuron indexes (default)
+# neuron indexes
 python examples/two_classification_apps/main.py --knowledge_transfer neuron
 ```
 
@@ -295,16 +295,16 @@ Commands for the 4 model generation strategies:
 ```bash
 cd EdgeScheduler
 
-# blocks with the least important neurons (baseline)
+# blocks with the least important neurons
 python examples/two_classification_apps/main.py --model_generate unimportant
 
-# blocks with randomly selected neurons (baseline)
+# blocks with randomly selected neurons
 python examples/two_classification_apps/main.py --model_generate random
 
 # blocks with the most important neurons measured on the source data
 python examples/two_classification_apps/main.py --model_generate source
 
-# blocks with the most important neurons measured on the current data (default)
+# blocks with the most important neurons measured on the current data
 python examples/two_classification_apps/main.py --model_generate current
 ```
 
