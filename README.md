@@ -403,9 +403,8 @@ During the online scheduling experiments, the memory footprint of each scheduler
 ```bash
 cd EdgeScheduler
 
-# run the online scheduling for each scheduler (records are written automatically)
+# run the online scheduling for each scheduler
 python examples/two_classification_apps/main.py
-python examples/two_classification_apps/main.py --scheduler EdgeOL
 
 # aggregate the recorded logs into the per-model jsonl files
 python examples/two_classification_apps/draw_pics/memory_from_logs.py
