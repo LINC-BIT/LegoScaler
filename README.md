@@ -398,12 +398,17 @@ The resource requirements and outputs are listed below:
 
 ### 2.6 Comparison of Memory Footprint (Figure 10 in Section V-D)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
-During the online scheduling experiments, the memory footprint of each scheduler is recorded. 
+During the online scheduling experiments, the memory footprint of each scheduler is recorded **during the real job execution**: at every scheduling window, each running job reports the resident size of the model it actually uses — the parameter size and the peak GPU memory of the window (which covers the short spikes of model generation and knowledge transfer) — into `examples/two_classification_apps/draw_pics/memory_logs.jsonl`, tagged with the scheduler name and the run id. For LegoScaler this reflects the scaled sub-model (low steady level, with peaks only during generation/feedback), while the baselines hold the full model during retraining.
+
 ```bash
 cd EdgeScheduler
 
-# run the online scheduling
+# run the online scheduling for each scheduler (records are written automatically)
 python examples/two_classification_apps/main.py
+python examples/two_classification_apps/main.py --scheduler EdgeOL
+
+# aggregate the recorded logs into the per-model jsonl files
+python examples/two_classification_apps/draw_pics/memory_from_logs.py
 
 # draw the memory footprint comparison figure
 python examples/two_classification_apps/draw_pics/memory_footprint.py
