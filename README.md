@@ -239,12 +239,12 @@ The resource requirements and outputs are listed below:
 
 ### 2.2 Evaluation of Knowledge Transfer (Figure 8-a in Section V-B)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
-This experiment evaluates how the knowledge learned by a retrained model flows back to the original (inference) model. All other experiment settings are the same; only the feedback strategy differs, selected by the `--knowledge_transfer` argument:
+This experiment evaluates how the knowledge learned by a retrained model flows back to the inference model through knowledge base.
 
-  - **No feedback (`no`)**: The retrained model is discarded after its retraining window, and nothing is written back to the inference model (baseline).
-  - **Direct replacement (`direct`)**: The retrained model directly replaces the inference model.
-  - **Layer-wise feedback (`layer`)**: For each layer, the neuron weight changes produced by retraining are averaged into a single value, and this value is added back to every neuron of the corresponding layer in the original model (coarse-grained feedback).
-  - **Neuron-index feedback (`neuron`, default)**: Only the neurons actually trained in the retraining window are softly written back (EMA with a weight of 0.1) to their exact positions in the original model through neuron indexes — the approach of LegoScaler.
+  - **No feedback (`no`)**: The retraining model is discarded after its retraining window, and nothing is written back to the knowledge base.
+  - **Direct replacement (`direct`)**: The retraining model directly replaces the inference model.
+  - **Layer-wise feedback (`layer`)**: For each layer, the neuron weight changes produced by retraining are averaged into a single value, and this value is added back to every neuron of the corresponding layer in the knowledge base.
+  - **Neuron-index feedback (`neuron`)**: Only the neurons actually trained in the retraining window are softly written back to their exact positions in the knowledge base through neuron indexes.
 
 Commands for the 4 knowledge transfer strategies:
 ```bash
@@ -289,7 +289,7 @@ This experiment evaluates how a scaled sub-model (its retained blocks/neurons) i
   - **Unimportant neurons (`unimportant`)**: Keep the least important neurons, i.e. the inverse of the importance-based selection (baseline).
   - **Random selection (`random`)**: Keep randomly chosen neurons (baseline).
   - **Importance on the source data (`source`)**: Measure the neuron importance by forwarding samples of the source (initial) dataset through the FBS modules, then keep the most important neurons.
-  - **Importance on the current data (`current`, default)**: Measure the neuron importance on the samples of the current input distribution, then keep the most important neurons — the approach of LegoScaler.
+  - **Importance on the current data (`current`, default)**: Measure the neuron importance on the samples of the current input distribution, then keep the most important neurons.
 
 Commands for the 4 model generation strategies:
 ```bash
