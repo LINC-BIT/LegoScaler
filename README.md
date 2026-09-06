@@ -575,6 +575,53 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
 #### 3.2.3 Integrating Other Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
-You can integrate other edge schedulers into LegoScaler by the following steps:
+You can integrate a new edge scheduler into LegoScaler by the following steps. A scheduler interacts with the system through one unified interface that has three parts: **when** it is triggered, **how** it makes decisions, and **how** its decisions take effect. 
 
-- Step 1: 
+- **Step 1: Implement your scheduler class.** Create a file such as `EdgeScheduler/schedulers/retraining/my_scheduler.py`, subclass `Scheduler` (or `PeriodicScheduler`) from `EdgeScheduler.zraysched`, and fill in the three parts of the interface:
+
+    - **Declare when the scheduler is triggered** in `reacted_events_type()`. Return the events that wake it up (e.g. `AppEventType.INFERENCE_START`) for event-driven scheduling; return `SchedulingTiming.EACH_WINDOW` to decide every time window; or return `SchedulingTiming.PERIODIC` to decide at a fixed interval.
+    - **Implement the decision logic** in `async run(self, jobs)`, where `jobs` is `{job_id: job}` of all currently running jobs. A `job_id` follows the form `{app_name}-training` / `{app_name}-inference`, so you can tell the job type with `'train' in job_id` and the model name with `job_id.split('-')[0]`.
+    - **Express the decisions through the return value** of `run()`: a dict `{job_id: {...}}`. Each entry supports `max_gpu_utilization` (the fraction of the next time window the job is allowed to run) and an optional `hyps` dict that is passed to the job's `run_for` (e.g. `batch_size`/`lr` for training; `model_size` for the block-grained scaling of LegoScaler).
+
+    ```python
+    from EdgeScheduler.zraysched import Scheduler, AppEventType, SchedulingTiming
+
+    class MyScheduler(Scheduler):
+        def reacted_events_type(self):
+            return [AppEventType.INFERENCE_START, AppEventType.TRAINING_START]
+
+        async def run(self, jobs):
+            res = {}
+            for job_id, job in jobs.items():
+                if 'train' not in job_id:
+                    continue
+                # your scheduling idea: decide how much GPU time and which
+                # hyper-parameters each training job should get
+                res[job_id] = {'max_gpu_utilization': 0.5,
+                               'hyps': {'batch_size': 64, 'lr': 3e-4}}
+            return res
+    ```
+
+- **Step 2: Register the scheduler** by exporting the class in `EdgeScheduler/schedulers/retraining/__init__.py`:
+
+    ```python
+    from .my_scheduler import MyScheduler
+    ```
+
+- **Step 3: Add a selection branch in the example driver.** In `EdgeScheduler/examples/two_classification_apps/main.py`, import the class and add an entry to the scheduler-selection code. 
+
+    ```python
+    from EdgeScheduler.schedulers.retraining.my_scheduler import MyScheduler
+
+    # in the scheduler-selection part of main()
+    elif scheduler_name == "my_scheduler":
+        scheduler = ray.remote(num_gpus=0.1)(MyScheduler).remote()
+    ```
+
+- After the integration, you can run the new scheduler:
+
+    ```bash
+    cd EdgeScheduler
+
+    python schedulers/examples/two_classification_apps/main.py --scheduler my_scheduler
+    ```
