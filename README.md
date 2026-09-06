@@ -583,7 +583,7 @@ You can integrate a new edge scheduler into LegoScaler by the following steps. A
     - **Implement the decision logic** in `async run(self, jobs)`, where `jobs` is `{job_id: job}` of all currently running jobs. A `job_id` follows the form `{app_name}-training` / `{app_name}-inference`, so you can tell the job type with `'train' in job_id` and the model name with `job_id.split('-')[0]`.
     - **Express the decisions through the return value** of `run()`: a dict `{job_id: {...}}`. Each entry supports `max_gpu_utilization` (the fraction of the next time window the job is allowed to run) and an optional `hyps` dict that is passed to the job's `run_for` (e.g. `batch_size`/`lr` for training; `model_size` for the block-grained scaling of LegoScaler).
 
-    ```python
+    ```bash
     from EdgeScheduler.zraysched import Scheduler, AppEventType, SchedulingTiming
 
     class MyScheduler(Scheduler):
@@ -595,8 +595,7 @@ You can integrate a new edge scheduler into LegoScaler by the following steps. A
             for job_id, job in jobs.items():
                 if 'train' not in job_id:
                     continue
-                # your scheduling idea: decide how much GPU time and which
-                # hyper-parameters each training job should get
+                # your scheduling idea: decide how much GPU time and which hyper-parameters each training job should get
                 res[job_id] = {'max_gpu_utilization': 0.5,
                                'hyps': {'batch_size': 64, 'lr': 3e-4}}
             return res
@@ -604,13 +603,13 @@ You can integrate a new edge scheduler into LegoScaler by the following steps. A
 
 - **Step 2: Register the scheduler** by exporting the class in `EdgeScheduler/schedulers/retraining/__init__.py`:
 
-    ```python
+    ```bash
     from .my_scheduler import MyScheduler
     ```
 
 - **Step 3: Add a selection branch in the example driver.** In `EdgeScheduler/examples/two_classification_apps/main.py`, import the class and add an entry to the scheduler-selection code. 
 
-    ```python
+    ```bash
     from EdgeScheduler.schedulers.retraining.my_scheduler import MyScheduler
 
     # in the scheduler-selection part of main()
