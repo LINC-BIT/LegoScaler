@@ -364,11 +364,17 @@ The resource requirements and outputs are listed below:
 
 ### 2.5 Evaluation of Multi-job Scheduling at Edge (Figure 9 in Section V-C)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
-Commands for running one scenario:
+This experiment evaluates LegoScaler and the other schedulers on **multi-job edge workloads**, where several applications run their inference and retraining jobs concurrently under an evolving input distribution. The scheduler under test is selected with the `--scheduler` argument (default `ours`, i.e. LegoScaler).
+
+Run one scenario under one scheduler:
 ```bash
 cd EdgeScheduler
 
+# run one scenario with LegoScaler (adjust the scenario by editing apps/apps_events in main.py)
 python examples/two_classification_apps/main.py
+
+# run the same scenario under another scheduler, e.g.:
+python examples/two_classification_apps/main.py --scheduler EdgeOL
 ```
 
 The resource requirements and outputs are listed below:
@@ -463,7 +469,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
   - **Step 1: Convert the pre-trained model into an FBS model with `FBSModelConverter`.** Pass the architecture name via `model_type` (the converter dispatches per architecture, e.g. `vit`).
 
-    ```bash
+    ```python
     from EdgeScheduler.examples.two_classification_apps.FBS_nets.nets.create_fbs_model import FBSModelConverter
 
     model = XXX.from_pretrained('/path/to/pretrained/weights')  # e.g. ViTModel.from_pretrained('google/vit-base-patch16-224-in21k')
@@ -476,7 +482,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
   - **Step 2: Jointly fine-tune the FBS model with `FBSJointTrainer`.** Dataloader functions follow the signature `get_XXX_dataloader(split, batch_size, model_type=None) -> (loader, dataset)`.
 
-    ```bash
+    ```python
     from EdgeScheduler.examples.two_classification_apps.FBS_nets.utils import FBSJointTrainer
     from EdgeScheduler.examples.two_classification_apps.data import get_XXX_dataloader
 
@@ -492,7 +498,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
   - **Step 1: Create a subclass of `ApplicationActor`.** The base class launches and stops the jobs, publishes the latest model (`get_model_ref`) and accepts updates from training workers (`update_model`).
 
-    ```bash
+    ```python
     from EdgeScheduler.zraysched import ApplicationActor
 
     class Application_XXX(ApplicationActor):
@@ -506,7 +512,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     - `get_fbs_model()` returns the full FBS model that is used to build scaled sub-models at runtime (cache it in `self.origin_fbs_model` like the demos);
     - `get_dataloader_func()` returns a dataloader function selected by `self.distribution_index`, which lets you rotate among datasets to emulate an evolving input distribution
 
-    ```bash
+    ```python
     def init_model(self):
         return torch.load('/path/to/fbs_checkpoints/xxx.pth', map_location='cpu')['main']
 
@@ -522,7 +528,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
   - **Step 3: Register the application and its events in `main.py`.**
 
-    ```bash
+    ```python
     from EdgeScheduler.examples.two_classification_apps.app_impl import Application_XXX
     from EdgeScheduler.examples.two_classification_apps.job_impl import DemoTrainingJob, DemoInferenceJob
 
@@ -619,7 +625,7 @@ You can integrate a new edge scheduler into LegoScaler by the following steps. A
     - **Implement the decision logic** in `async run(self, jobs)`, where `jobs` is `{job_id: job}` of all currently running jobs. A `job_id` follows the form `{app_name}-training` / `{app_name}-inference`, so you can tell the job type with `'train' in job_id` and the model name with `job_id.split('-')[0]`.
     - **Express the decisions through the return value** of `run()`: a dict `{job_id: {...}}`. Each entry supports `max_gpu_utilization` (the fraction of the next time window the job is allowed to run) and an optional `hyps` dict that is passed to the job's `run_for` (e.g. `batch_size`/`lr` for training; `model_size` for the block-grained scaling of LegoScaler).
 
-    ```bash
+    ```python
     from EdgeScheduler.zraysched import Scheduler, AppEventType, SchedulingTiming
 
     class MyScheduler(Scheduler):
@@ -639,13 +645,13 @@ You can integrate a new edge scheduler into LegoScaler by the following steps. A
 
 - **Step 2: Register the scheduler** by exporting the class in `EdgeScheduler/schedulers/retraining/__init__.py`:
 
-    ```bash
+    ```python
     from .my_scheduler import MyScheduler
     ```
 
 - **Step 3: Add a selection branch in the example driver.** In `main.py`, import the class and add an entry to the scheduler-selection code. 
 
-    ```bash
+    ```python
     from EdgeScheduler.schedulers.retraining.my_scheduler import MyScheduler
 
     # in the scheduler-selection part of main()
