@@ -284,7 +284,7 @@ The resource requirements and outputs are listed below:
 
 ### 2.3 Evaluation of Model Generator (Figure 8-b in Section V-B)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
-This experiment evaluates how a scaled sub-model (its retained blocks/neurons) is generated when the block-grained scaling is performed: at a given density, which neurons are kept. The FBS modules predict the importance of each channel from the input they receive, and the `--model_generate` argument selects among four ways of deriving the retained neurons:
+This experiment evaluates how a scaled sub-model (its retained blocks/neurons) is generated when the block-grained scaling is performed: at a given density, which neurons are kept. The FBS modules predict the importance of each channel from the input they receive.
 
   - **Unimportant neurons (`unimportant`)**: Keep the least important neurons, i.e. the inverse of the importance-based selection (baseline).
   - **Random selection (`random`)**: Keep randomly chosen neurons (baseline).
