@@ -329,6 +329,13 @@ The resource requirements and outputs are listed below:
 
 ### 2.4 Execution Time breakdown (Figure 8-c in Section V-B)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
+This experiment breaks the wall time of one scheduling round of the whole pipeline down into its four steps:
+
+  1. **Accuracy prediction**: evaluating candidate model-size configurations with the accuracy predictor inside the scheduler;
+  2. **Model generation**: building the scaled sub-model from the channel importance predicted by the FBS modules;
+  3. **Retraining**: the retraining loop of the retraining job;
+  4. **Knowledge transfer**: writing the retrained knowledge back to the inference model.
+
 Commands for testing the execution time:
 ```bash
 cd EdgeScheduler
