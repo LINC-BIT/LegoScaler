@@ -622,7 +622,7 @@ You can integrate a new edge scheduler into LegoScaler by the following steps. A
     from .my_scheduler import MyScheduler
     ```
 
-- **Step 3: Add a selection branch in the example driver.** In `EdgeScheduler/examples/two_classification_apps/main.py`, import the class and add an entry to the scheduler-selection code. 
+- **Step 3: Add a selection branch in the example driver.** In `main.py`, import the class and add an entry to the scheduler-selection code. 
 
     ```bash
     from EdgeScheduler.schedulers.retraining.my_scheduler import MyScheduler
