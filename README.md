@@ -244,16 +244,16 @@ Commands for 4 knowledge transfer strategies:
 cd EdgeScheduler
 
 # no feedback
-python schedulers/examples/two_classification_apps/main.py --knowledge_transfer no
+python examples/two_classification_apps/main.py --knowledge_transfer no
 
 # direct replacement
-python schedulers/examples/two_classification_apps/main.py --knowledge_transfer direct
+python examples/two_classification_apps/main.py --knowledge_transfer direct
 
 # layer-wise feedback
-python schedulers/examples/two_classification_apps/main.py --knowledge_transfer layer
+python examples/two_classification_apps/main.py --knowledge_transfer layer
 
 # neuron indexes
-python schedulers/examples/two_classification_apps/main.py --knowledge_transfer neuron
+python examples/two_classification_apps/main.py --knowledge_transfer neuron
 ```
 
 The resource requirements and outputs are listed below:
@@ -282,16 +282,16 @@ Commands for 4 model generation strategies (how to generate blocks):
 cd EdgeScheduler
 
 # blocks with the most unimportant neurons
-python schedulers/examples/two_classification_apps/main.py --model_generate unimportant
+python examples/two_classification_apps/main.py --model_generate unimportant
 
 # blocks with randomly selected neurons
-python schedulers/examples/two_classification_apps/main.py --model_generate random
+python examples/two_classification_apps/main.py --model_generate random
 
 # blocks with the most important neurons in source data
-python schedulers/examples/two_classification_apps/main.py --model_generate source
+python examples/two_classification_apps/main.py --model_generate source
 
 # blocks with the most important neurons in current input data
-python schedulers/examples/two_classification_apps/main.py --model_generate current
+python examples/two_classification_apps/main.py --model_generate current
 ```
 
 The resource requirements and outputs are listed below:
@@ -319,7 +319,7 @@ Commands for testing the execution time:
 ```bash
 cd EdgeScheduler
 
-python schedulers/examples/two_classification_apps/execution_time.py
+python examples/two_classification_apps/execution_time.py
 ```
 
 The resource requirements and outputs are listed below:
@@ -347,7 +347,7 @@ Commands for running one scenario:
 ```bash
 cd EdgeScheduler
 
-python schedulers/examples/two_classification_apps/main.py
+python examples/two_classification_apps/main.py
 ```
 
 The resource requirements and outputs are listed below:
@@ -376,10 +376,10 @@ During the online scheduling experiments, the memory footprint of each scheduler
 cd EdgeScheduler
 
 # run the online scheduling
-python schedulers/examples/two_classification_apps/main.py
+python examples/two_classification_apps/main.py
 
 # draw the memory footprint comparison figure
-python schedulers/examples/two_classification_apps/draw_pics/memory_footprint.py
+python examples/two_classification_apps/draw_pics/memory_footprint.py
 ```
 
 The resource requirements and outputs are listed below:
@@ -408,10 +408,10 @@ During the online scheduling experiments, the energy consumption of each schedul
 cd EdgeScheduler
 
 # run the online scheduling
-python schedulers/examples/two_classification_apps/main.py
+python examples/two_classification_apps/main.py
 
 # analysis and statistics of recorded data
-python schedulers/examples/two_classification_apps/draw_pics/energy_consumption.py
+python examples/two_classification_apps/draw_pics/energy_consumption.py
 ```
 
 <table align="center">
@@ -523,43 +523,43 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
   - **AdaInf**: Interleave incremental retraining with inference based on the severity of data drift. 
     To this scheduler, you can set the `--scheduler` argument to `AdaInf` in the command line.
     ```bash
-    python schedulers/examples/two_classification_apps/main.py --scheduler AdaInf
+    python examples/two_classification_apps/main.py --scheduler AdaInf
     ```
 
   - **Corun**: Execute mixed jobs concurrently via spatial multiplexing.
     To this scheduler, you can set the `--scheduler` argument to `Corun` in the command line.
     ```bash
-    python schedulers/examples/two_classification_apps/main.py --scheduler Corun
+    python examples/two_classification_apps/main.py --scheduler Corun
     ```
   
   - **EdgeNN**: Accelerate inference jobs through semantic-aware memory management.
     To this scheduler, you can set the `--scheduler` argument to `EdgeNN` in the command line.
     ```bash
-    python schedulers/examples/two_classification_apps/main.py --scheduler EdgeNN
+    python examples/two_classification_apps/main.py --scheduler EdgeNN
     ```
 
   - **ACBatch**: Optimize batching strategies via dynamic programming.
     To this scheduler, you can set the `--scheduler` argument to `ACBatch` in the command line.
     ```bash
-    python schedulers/examples/two_classification_apps/main.py --scheduler ACBatch
+    python examples/two_classification_apps/main.py --scheduler ACBatch
     ```
 
   - **MMSL**: Decomposes inference jobs via model partitioning.
     To this scheduler, you can set the `--scheduler` argument to `MMSL` in the command line.
     ```bash
-    python schedulers/examples/two_classification_apps/main.py --scheduler MMSL
+    python examples/two_classification_apps/main.py --scheduler MMSL
     ```
 
   - **TS-MITO**: Optimize model selection and job offloading based on reinforcement learning.
     To this scheduler, you can set the `--scheduler` argument to `TS-MITO` in the command line.
     ```bash
-    python schedulers/examples/two_classification_apps/main.py --scheduler TS-MITO
+    python examples/two_classification_apps/main.py --scheduler TS-MITO
     ```
 
   - **PSA**: Optimize model branch selection and communication resource allocation.
     To this scheduler, you can set the `--scheduler` argument to `PSA` in the command line.
     ```bash
-    python schedulers/examples/two_classification_apps/main.py --scheduler PSA
+    python examples/two_classification_apps/main.py --scheduler PSA
     ```
 
 #### 3.2.2 Integrating Retraining-oriented Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
@@ -567,25 +567,25 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
   - **AdaEvo**: Schedule multiple retraining jobs based on urgency.
     To this scheduler, you can set the `--scheduler` argument to `AdaEvo` in the command line.
     ```bash
-    python schedulers/examples/two_classification_apps/main.py --scheduler AdaEvo
+    python examples/two_classification_apps/main.py --scheduler AdaEvo
     ```
     
   - **EdgeOL**: Improve the computational efficiency of retraining jobs according to Centered Kernel Alignment (CKA) similarity.
     To this scheduler, you can set the `--scheduler` argument to `EdgeOL` in the command line.
     ```bash
-    python schedulers/examples/two_classification_apps/main.py --scheduler EdgeOL
+    python examples/two_classification_apps/main.py --scheduler EdgeOL
     ```
     
   - **SRS**: Insert retraining jobs into the Directed Acyclic Graph (DAG) of job requests.
     To this scheduler, you can set the `--scheduler` argument to `SRS` in the command line.
     ```bash
-    python schedulers/examples/two_classification_apps/main.py --scheduler SRS
+    python examples/two_classification_apps/main.py --scheduler SRS
     ```
         
   - **EdgeTA**: Perform neuron-grained model scaling and scheduling for retraining jobs.
     To this scheduler, you can set the `--scheduler` argument to `EdgeTA` in the command line.
     ```bash
-    python schedulers/examples/two_classification_apps/main.py --scheduler EdgeTA
+    python examples/two_classification_apps/main.py --scheduler EdgeTA
     ```
 
 #### 3.2.3 Integrating Other Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
