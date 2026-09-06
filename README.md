@@ -239,7 +239,14 @@ The resource requirements and outputs are listed below:
 
 ### 2.2 Evaluation of Knowledge Transfer (Figure 8-a in Section V-B)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
-Commands for 4 knowledge transfer strategies:
+This experiment evaluates how the knowledge learned by a retrained model flows back to the original (inference) model. All other experiment settings are the same; only the feedback strategy differs, selected by the `--knowledge_transfer` argument:
+
+  - **No feedback (`no`)**: The retrained model is discarded after its retraining window, and nothing is written back to the inference model (baseline).
+  - **Direct replacement (`direct`)**: The retrained model directly replaces the inference model.
+  - **Layer-wise feedback (`layer`)**: For each layer, the neuron weight changes produced by retraining are averaged into a single value, and this value is added back to every neuron of the corresponding layer in the original model (coarse-grained feedback).
+  - **Neuron-index feedback (`neuron`, default)**: Only the neurons actually trained in the retraining window are softly written back (EMA with a weight of 0.1) to their exact positions in the original model through neuron indexes — the approach of LegoScaler.
+
+Commands for the 4 knowledge transfer strategies:
 ```bash
 cd EdgeScheduler
 
@@ -252,7 +259,7 @@ python examples/two_classification_apps/main.py --knowledge_transfer direct
 # layer-wise feedback
 python examples/two_classification_apps/main.py --knowledge_transfer layer
 
-# neuron indexes
+# neuron indexes (default)
 python examples/two_classification_apps/main.py --knowledge_transfer neuron
 ```
 
@@ -277,20 +284,27 @@ The resource requirements and outputs are listed below:
 
 ### 2.3 Evaluation of Model Generator (Figure 8-b in Section V-B)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
-Commands for 4 model generation strategies (how to generate blocks):
+This experiment evaluates how a scaled sub-model (its retained blocks/neurons) is generated when the block-grained scaling is performed: at a given density, which neurons are kept. The FBS modules predict the importance of each channel from the input they receive, and the `--model_generate` argument selects among four ways of deriving the retained neurons:
+
+  - **Unimportant neurons (`unimportant`)**: Keep the least important neurons, i.e. the inverse of the importance-based selection (baseline).
+  - **Random selection (`random`)**: Keep randomly chosen neurons (baseline).
+  - **Importance on the source data (`source`)**: Measure the neuron importance by forwarding samples of the source (initial) dataset through the FBS modules, then keep the most important neurons.
+  - **Importance on the current data (`current`, default)**: Measure the neuron importance on the samples of the current input distribution, then keep the most important neurons — the approach of LegoScaler.
+
+Commands for the 4 model generation strategies:
 ```bash
 cd EdgeScheduler
 
-# blocks with the most unimportant neurons
+# blocks with the least important neurons (baseline)
 python examples/two_classification_apps/main.py --model_generate unimportant
 
-# blocks with randomly selected neurons
+# blocks with randomly selected neurons (baseline)
 python examples/two_classification_apps/main.py --model_generate random
 
-# blocks with the most important neurons in source data
+# blocks with the most important neurons measured on the source data
 python examples/two_classification_apps/main.py --model_generate source
 
-# blocks with the most important neurons in current input data
+# blocks with the most important neurons measured on the current data (default)
 python examples/two_classification_apps/main.py --model_generate current
 ```
 
