@@ -438,68 +438,83 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
 ### 3.1 Integrating Different Models<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
-- **Offline integration:**
-  - Step 1: Create a function and load the model's pre-trained weights.
+- **Offline integration: build and pre-train an FBS version of your model.** The FBS module keeps the weights of an original layer and adds a channel-importance predictor, which is what enables block-grained scaling at runtime.
+
+  - **Step 1: Convert the pre-trained model into an FBS model with `FBSModelConverter`.** Pass the architecture name via `model_type` (the converter dispatches per architecture, e.g. `vit`).
+
     ```bash
-    model = XXX.from_pretrained('/path/to/pretrained/weights')
-    
-    # For example, for ViT-B/16 from HuggingFace:
-    model = ViTModel.from_pretrained('google/vit-base-patch16-224-in21k')
+    from EdgeScheduler.examples.two_classification_apps.FBS_nets.nets.create_fbs_model import FBSModelConverter
+
+    model = XXX.from_pretrained('/path/to/pretrained/weights')  # e.g. ViTModel.from_pretrained('google/vit-base-patch16-224-in21k')
+
+    converter = FBSModelConverter(density=1.0, model_type='XXX')  # 'XXX' = your architecture branch
+    fbs_model = converter.convert_model(model)
     ```
 
-  - Step 2: Add FBS insertion in the class `FBSModelConverter` (already exists).
-    ```bash
-    class FBSModelConverter:
-        def convert_model(self, model):
-            if self.model_type == 'XXX':
-              for name, module in model.named_children():
-                  # Recognize the block according to its name or type
-                  if isinstance(module, XXXBlock) or name in ['block1', 'block2', ...]:
-                      # Insert FBS into the block
-                      fbs_module = FBS(...)
-                      setattr(model, name, fbs_module)
-    ```
-  
-  - Step 3: Fine-tune the model on the pre-training dataset through the class `FBSJointTrainer`.
-    ```bash
-    # load the dataset
-    train_loader, test_loader = prepare_XXX_data(batch_size=..., data_dir='/path/to/dataset')
-    
-    # define the training parameters
-    trainer = FBSJointTrainer(num_epochs=..., model_type='XXX', lr=..., train_loader=train_loader, test_loader=test_loader, ...)
-    trainer.train()
-    ``` 
+    To support a new architecture, add a branch in `FBSModelConverter.convert_model` that wraps the layers/blocks to be scaled with `FBS(original_layer=..., in_channels=..., out_channels=..., density=..., model_type='XXX')`.
 
-- **Online integration**:
-  - Step 1: Create a class `Application_XXX` inherited from `ApplicationActor`.
+  - **Step 2: Jointly fine-tune the FBS model with `FBSJointTrainer`.** Dataloader functions follow the signature `get_XXX_dataloader(split, batch_size, model_type=None) -> (loader, dataset)`.
+
     ```bash
-    class Application_XXX(ApplicationActor)
+    from EdgeScheduler.examples.two_classification_apps.FBS_nets.utils import FBSJointTrainer
+    from EdgeScheduler.examples.two_classification_apps.data import get_XXX_dataloader
+
+    train_loader, _ = get_XXX_dataloader('train', batch_size=64, model_type='XXX')
+    val_loader, _   = get_XXX_dataloader('val',   batch_size=64, model_type='XXX')
+
+    trainer = FBSJointTrainer(model=fbs_model, train_loader=train_loader, val_loader=val_loader,
+                              device='cuda', num_classes=..., model_type='XXX', num_epochs=...)
+    trainer.train(save_dir='/path/to/fbs_checkpoints')
     ```
-  
-  - Step 2: Implement its functions for initialization and data loading
+
+- **Online integration: wrap the FBS model in an application actor.** The simulator only interacts with `ApplicationActor` and its training/inference jobs.
+
+  - **Step 1: Create a subclass of `ApplicationActor`.** The base class launches and stops the jobs, publishes the latest model (`get_model_ref`) and accepts updates from training workers (`update_model`).
+
     ```bash
-    # Initialize the model
+    from EdgeScheduler.zraysched import ApplicationActor
+
+    class Application_XXX(ApplicationActor):
+        def __init__(self, app_name, training_job_actor_class, inference_job_actor_class, device):
+            super().__init__(app_name, training_job_actor_class, inference_job_actor_class, device)
+            self.origin_fbs_model = None
+    ```
+
+  - **Step 2: Implement the three hooks the base class needs**: 
+    - `init_model()` returns the FBS model (on CPU, it is published via `ray.put`)
+    - `get_fbs_model()` returns the full FBS model that is used to build scaled sub-models at runtime (cache it in `self.origin_fbs_model` like the demos);
+    - `get_dataloader_func()` returns a dataloader function selected by `self.distribution_index`, which lets you rotate among datasets to emulate an evolving input distribution
+
+    ```bash
     def init_model(self):
-        model_state_dict_path = '/path/to/pretrained/weights'
-        model = torch.load(model_state_dict_path)
-        return model
-    
-    # Load the dataset
-    def def get_dataloader_func(self):
-        dataloaders_func = [get_XXX_dataloader, ...]
-    ```
-    
-  - Step 3: Add the model's application in `main.py`.
-    ```bash
-    apps = dict(XXX=ray.remote(Application_XXX).remote('XXX', ...), ...)
+        return torch.load('/path/to/fbs_checkpoints/xxx.pth', map_location='cpu')['main']
+
+    def get_fbs_model(self):
+        if self.origin_fbs_model is None:
+            self.origin_fbs_model = self.init_model()
+        return self.origin_fbs_model
+
+    def get_dataloader_func(self):
+        dataloaders_func = [get_cifar10_dataloader, get_caltech256_dataloader, ...]  # from data.py
+        return dataloaders_func[self.distribution_index % len(dataloaders_func)]
     ```
 
-- After the integration, you can use the model for online scheduling.
-  ```bash
-  # Define the applications and their configurations
-  # There are 4 event types: INFERENCE_START, INFERENCE_FINISH, TRAINING_START, TRAINING_FINISH
-  apps_events=[AppEvent(app_id="XXX", timestamp=0, event_type=AppEventType.INFERENCE_START), ...]
-  ```
+  - **Step 3: Register the application and its events in `main.py`.**
+
+    ```bash
+    from EdgeScheduler.examples.two_classification_apps.app_impl import Application_XXX
+    from EdgeScheduler.examples.two_classification_apps.job_impl import DemoTrainingJob, DemoInferenceJob
+
+    apps = dict(XXX=ray.remote(Application_XXX).remote('XXX', DemoTrainingJob, DemoInferenceJob, device=device), ...)
+
+    # Event types: INFERENCE_START, INFERENCE_FINISH, TRAINING_START, TRAINING_FINISH
+    apps_events = [AppEvent(app_id='XXX', timestamp=0, event_type=AppEventType.INFERENCE_START),
+                   AppEvent(app_id='XXX', timestamp=0, event_type=AppEventType.TRAINING_START), ...]
+    ```
+
+    If your model needs special batching, optimization or evaluation (e.g. detection losses, tokenizers), extend the `self.model_type == 'XXX'` branches in `DemoTrainingJob.run_for` / `DemoInferenceJob.run_for` (`job_impl.py`).
+
+- After the integration, the model can be used for online scheduling.
 
 ### 3.2 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
