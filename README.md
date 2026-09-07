@@ -434,15 +434,16 @@ The resource requirements and outputs are listed below:
 
 ### 2.7 Comparison of Energy Consumption (Table 3 in Section V-D)<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
-During the online scheduling experiments, the energy consumption of each scheduler is recorded. 
+This experiment measures the real GPU energy consumption of a scheduling run with **NVML**. The scenario runs one application for a single short round while the driver samples the power draw of every GPU (default interval 0.1 s) and integrates it over the scheduling execution (the model-loading preparation is not counted); a short idle window is measured beforehand, so both the total and the net (above-idle) energy are reported.
+
 ```bash
 cd EdgeScheduler
 
-# run the online scheduling
-python examples/two_classification_apps/main.py
+# measure the energy consumption of one short scheduling run (LegoScaler by default)
+python examples/two_classification_apps/energy_consumption.py
 
-# analysis and statistics of recorded data
-python examples/two_classification_apps/draw_pics/energy_consumption.py
+# run the same scenario under another scheduler, e.g.:
+python examples/two_classification_apps/energy_consumption.py --scheduler uniform
 ```
 
 <table align="center">
