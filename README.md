@@ -279,7 +279,7 @@ The resource requirements and outputs are listed below:
       <tr>
         <td>10GB memory<br>25GB disk space</td>
         <td>Model: ViT-B/16</td>
-        <td>
+        <td> 
           1. No feedback:
           <img src="./readme_imgs/fig_8_1_no.png" width="150"><br>
           2. Direct replacement:
