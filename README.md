@@ -335,13 +335,13 @@ The resource requirements and outputs are listed below:
         <td>Model: ViT-B/16<br>Execution time: 60s</td>
         <td>
           1. Most unimportant:
-          <img src="./readme_imgs/fig_8_2_unimportant.png" width="250"><br>
+          <img src="./readme_imgs/fig_8_2_unimportant.png" width="100"><br>
           2. Random selection:
-          <img src="./readme_imgs/fig_8_2_random.png" width="250"><br>
+          <img src="./readme_imgs/fig_8_2_random.png" width="100"><br>
           3. Most important on the source data:
-          <img src="./readme_imgs/fig_8_2_source.png" width="250"><br>
+          <img src="./readme_imgs/fig_8_2_source.png" width="100"><br>
           4. Most important on the current data:
-          <img src="./readme_imgs/fig_8_2_current.png" width="250"><br>
+          <img src="./readme_imgs/fig_8_2_current.png" width="100"><br>
         </td>
       </tr>
     </tbody>
