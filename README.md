@@ -223,12 +223,14 @@ The resource requirements and outputs are listed below:
     <thead>
       <tr>
         <th>Resource Requirements</th>
+        <th>Settings</th>
         <th>Example Running Outputs</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td>2 hours<br>10GB memory<br>25GB disk space</td>
+        <td>Model: ResNet-18</td>
         <td>
           <img src="./readme_imgs/fig_7_1.png" width="250">
           <img src="./readme_imgs/fig_7_2.png" width="300">
@@ -269,12 +271,14 @@ The resource requirements and outputs are listed below:
     <thead>
       <tr>
         <th>Resource Requirements</th>
+        <th>Settings</th>
         <th>Example Running Outputs</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>2 hours<br>10GB memory<br>25GB disk space</td>
+        <td>10GB memory<br>25GB disk space</td>
+        <td>Model: ViT-B/16<br>Execution time: 60s</td>
         <td>
           <img src="./readme_imgs/fig_8_1.png" width="250">
         </td>
@@ -314,12 +318,14 @@ The resource requirements and outputs are listed below:
     <thead>
       <tr>
         <th>Resource Requirements</th>
+        <th>Settings</th>
         <th>Example Running Outputs</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>2 hours<br>10GB memory<br>25GB disk space</td>
+        <td>10GB memory<br>25GB disk space</td>
+        <td>Model: ViT-B/16<br>Execution time: 60s</td>
         <td>
           <img src="./readme_imgs/fig_8_2.png" width="300">
         </td>
@@ -349,12 +355,14 @@ The resource requirements and outputs are listed below:
     <thead>
       <tr>
         <th>Resource Requirements</th>
+        <th>Settings</th>
         <th>Example Running Outputs</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>2 hours<br>10GB memory<br>25GB disk space</td>
+        <td>10GB memory<br>25GB disk space</td>
+        <td>Model: ResNet-18</td>
         <td>
           <img src="./readme_imgs/fig_8_3.png" width="300">
         </td>
@@ -383,12 +391,14 @@ The resource requirements and outputs are listed below:
     <thead>
       <tr>
         <th>Resource Requirements</th>
+        <th>Settings</th>
         <th>Example Running Outputs</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>1 hour<br>20GB memory<br>50GB disk space</td>
+        <td>20GB memory<br>50GB disk space</td>
+        <td>Model: ResNet-18<br>Execution time: 10 minutes</td>
         <td>
           <img src="./readme_imgs/fig_9.png" width="250">
         </td>
