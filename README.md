@@ -278,16 +278,16 @@ The resource requirements and outputs are listed below:
     <tbody>
       <tr>
         <td>10GB memory<br>25GB disk space</td>
-        <td>Model: ViT-B/16<br>Execution time: 60s</td>
+        <td>Model: ViT-B/16</td>
         <td>
           1. No feedback:
-          <img src="./readme_imgs/fig_8_1_no.png" width="250">
+          <img src="./readme_imgs/fig_8_1_no.png" width="250"><br>
           2. Direct replacement:
-          <img src="./readme_imgs/fig_8_1_no.png" width="250">
+          <img src="./readme_imgs/fig_8_1_no.png" width="250"><br>
           3. Layer-wise feedback:
-          <img src="./readme_imgs/fig_8_1_no.png" width="250">
+          <img src="./readme_imgs/fig_8_1_no.png" width="250"><br>
           4. Neuron-index feedback:
-          <img src="./readme_imgs/fig_8_1_no.png" width="250">
+          <img src="./readme_imgs/fig_8_1_no.png" width="250"><br>
         </td>
       </tr>
     </tbody>
