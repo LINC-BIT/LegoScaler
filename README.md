@@ -339,9 +339,9 @@ The resource requirements and outputs are listed below:
           2. Random selection:
           <img src="./readme_imgs/fig_8_2_random.png" width="250"><br>
           3. Most important on the source data:
-          <img src="./readme_imgs/fig_8_2_no.png" width="250"><br>
+          <img src="./readme_imgs/fig_8_2_source.png" width="250"><br>
           4. Most important on the current data:
-          <img src="./readme_imgs/fig_8_2_no.png" width="250"><br>
+          <img src="./readme_imgs/fig_8_2_current.png" width="250"><br>
         </td>
       </tr>
     </tbody>
