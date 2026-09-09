@@ -232,7 +232,7 @@ The resource requirements and outputs are listed below:
         <td>2 hours<br>10GB memory<br>25GB disk space</td>
         <td>Model: ResNet-18</td>
         <td>
-          <img src="./readme_imgs/fig_7_1.png" width="250">
+          <img src="./readme_imgs/fig_7_1.png" width="200">
           <img src="./readme_imgs/fig_7_2.png" width="250">
         </td>
       </tr>
