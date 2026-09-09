@@ -233,7 +233,7 @@ The resource requirements and outputs are listed below:
         <td>Model: ResNet-18</td>
         <td>
           <img src="./readme_imgs/fig_7_1.png" width="250">
-          <img src="./readme_imgs/fig_7_2.png" width="300">
+          <img src="./readme_imgs/fig_7_2.png" width="250">
         </td>
       </tr>
     </tbody>
