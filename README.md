@@ -334,7 +334,14 @@ The resource requirements and outputs are listed below:
         <td>10GB memory<br>25GB disk space</td>
         <td>Model: ViT-B/16<br>Execution time: 60s</td>
         <td>
-          <img src="./readme_imgs/fig_8_2.png" width="300">
+          1. Most unimportant:
+          <img src="./readme_imgs/fig_8_2_unimportant.png" width="250"><br>
+          2. Random selection:
+          <img src="./readme_imgs/fig_8_2_random.png" width="250"><br>
+          3. Most important on the source data:
+          <img src="./readme_imgs/fig_8_2_no.png" width="250"><br>
+          4. Most important on the current data:
+          <img src="./readme_imgs/fig_8_2_no.png" width="250"><br>
         </td>
       </tr>
     </tbody>
