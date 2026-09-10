@@ -332,7 +332,7 @@ The resource requirements and outputs are listed below:
     <tbody>
       <tr>
         <td>10GB memory<br>25GB disk space</td>
-        <td>Model: ViT-B/16<br>Execution time: 60s</td>
+        <td>Model: ViT-B/16</td>
         <td>
           1. Most unimportant:
           <img src="./readme_imgs/fig_8_2_unimportant.png" width="100"><br>
