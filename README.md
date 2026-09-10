@@ -281,7 +281,6 @@ The resource requirements and outputs are listed below:
         <td>Model: ViT-B/16</td>
         <td> 
           1. No feedback:
-          <img src="./readme_imgs/fig_8_1_no.png" width="150"><br>
           2. Direct replacement:
           <img src="./readme_imgs/fig_8_1_direct.png" width="150"><br>
           3. Layer-wise feedback:
