@@ -492,6 +492,33 @@ python examples/two_classification_apps/energy_consumption.py --scheduler unifor
 LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 **edge schedulers** (e.g. inference-oriented and retraining-oriented schedulers).
 
+### 3.1 Supported Models<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
+
+**Image classification**
+
+  ||Model Name|Source Data|Script|
+  |--|--|--|--|
+  |&#9745;|[ResNet (CVPR'2016)](https://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html) |[ImageNet](https://www.image-net.org/)|[Demo](EdgeScheduler/examples/experiments/image_classification/resnet18.py)|
+  |&#9745;|[MobileNetV2 (CVPR'2018)](https://arxiv.org/abs/1801.04381)|[ImageNet](https://www.image-net.org/)| [Demo](EdgeScheduler/examples/experiments/image_classification/mobilenetv2.py)|
+  |&#9745;|[VGG (ICLR'2015)](http://arxiv.org/abs/1409.1556)|[ImageNet](https://www.image-net.org/)| [Demo](EdgeScheduler/examples/experiments/image_classification/vgg16.py)|
+  |&#9745;|[ConvNext (CVPR'2022)](https://arxiv.org/abs/2201.03545)|[ImageNet](https://www.image-net.org/)| [Demo](EdgeScheduler/examples/experiments/image_classification/convnext.py)|
+  |&#9745;|[InternImage (CVPR'2023)](https://arxiv.org/abs/2211.05778)|[ImageNet](https://www.image-net.org/)| [Demo](EdgeScheduler/examples/experiments/image_classification/internimage.py)|
+
+**Object detection**
+
+  ||Model Name|Source Data|Script|
+  |--|--|--|--|
+  |&#9745;|[Fast R-CNN (NIPS'2015)](https://ieeexplore.ieee.org/abstract/document/7485869)| [PARSCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC)|[Demo](EdgeScheduler/examples/experiments/object_detection/faster_rcnn.py)|
+
+
+**Text classification**
+
+  ||Model Name|Source Data|Script|
+  |--|--|--|--|
+  |&#9745;|[LSTM](https://deeplearning.cs.cmu.edu/S23/document/readings/LSTM.pdf)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/lstm.py) |
+  |&#9745;|[RNN](https://arxiv.org/abs/1409.2329)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/rnn.py) |
+
+
 ### 3.1 Integrating Different Models<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
 - **Offline integration: build and pre-train an FBS version of your model.** The FBS module keeps the weights of an original layer and adds a channel-importance predictor, which is what enables block-grained scaling at runtime.
