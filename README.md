@@ -510,6 +510,26 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
   |--|--|--|--|
   |&#9745;|[Fast R-CNN (NIPS'2015)](https://ieeexplore.ieee.org/abstract/document/7485869)| [PARSCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC)|[Demo](EdgeScheduler/examples/experiments/object_detection/faster_rcnn.py)|
 
+**Semantic segmentation**
+
+  ||Model Name|Source Data|Script|
+  |--|--|--|--|
+  ||[FCN (CVPR'2015)](https://openaccess.thecvf.com/content_cvpr_2015/html/Long_Fully_Convolutional_Networks_2015_CVPR_paper.html)| [PARSCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC) |[Demo]()|
+  ||[DeepLab v3 (ArXiv'2017)](https://arxiv.org/abs/1706.05587)| [PARSCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC) |[Demo]()|
+
+
+**Action recognition**
+  
+  ||Model Name|Source Data|Script|
+  |--|--|--|--|
+  ||[TSN (ECCV'2016)](https://link.springer.com/chapter/10.1007/978-3-319-46484-8_2)|[HDMB51](https://serre-lab.clps.brown.edu/resource/hmdb-a-large-human-motion-database/#Downloads)|[Demo]()|
+  ||[TRN (ECCV'2018)](https://openaccess.thecvf.com/content_ECCV_2018/html/Bolei_Zhou_Temporal_Relational_Reasoning_ECCV_2018_paper.html)|[HDMB51](https://serre-lab.clps.brown.edu/resource/hmdb-a-large-human-motion-database/#Downloads)|[Demo]()|
+
+**Pos tagging**
+
+  ||Model Name|Source Data|Script|
+  |--|--|--|--|
+  ||[TCN (arXiv'2018)](https://arxiv.org/abs/1803.01271)|[Penn Treebank](https://catalog.ldc.upenn.edu/LDC99T42)|[Demo]()|
 
 **Text classification**
 
