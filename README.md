@@ -26,11 +26,12 @@ for Mixed Inference and Retraining Jobs at Edge"**.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#26-comparison-of-memory-footprint-figure-10-in-section-v-d">2.6 Comparison of Memory Footprint (Figure 10 in Section V-D)</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#27-comparison-of-energy-consumption-table-3-in-section-v-d">2.7 Comparison of Energy Consumption (Table 3 in Section V-D)</a><br>
 <a href="#3-reusability-integrating-legoscaler-with-models-and-edge-schedulers">3. Reusability: Integrating LegoScaler with Models and Edge Schedulers</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-integrating-different-models">3.1 Integrating Different Models</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-integrating-different-edge-schedulers">3.2 Integrating Different Edge Schedulers</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#321-integrating-inference-oriented-schedulers">3.2.1 Integrating Inference-oriented Schedulers</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#322-integrating-retraining-oriented-schedulers">3.2.2 Integrating Retraining-oriented Schedulers</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#323-integrating-other-edge-schedulers">3.2.3 Integrating Other Schedulers</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-supported-models">3.1 Supported Models</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-integrating-different-models">3.2 Integrating Different Models</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-integrating-different-edge-schedulers">3.3 Integrating Different Edge Schedulers</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#331-integrating-inference-oriented-schedulers">3.3.1 Integrating Inference-oriented Schedulers</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#332-integrating-retraining-oriented-schedulers">3.3.2 Integrating Retraining-oriented Schedulers</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#333-integrating-other-edge-schedulers">3.3.3 Integrating Other Schedulers</a><br>
 
 
 ## 1. Artifact Overview
@@ -443,12 +444,14 @@ The resource requirements and outputs are listed below:
     <thead>
       <tr>
         <th>Resource Requirements</th>
+        <th>Settings</th>
         <th>Example Running Outputs</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td>1 hour<br>20GB memory<br>50GB disk space</td>
+        <td>Model: ResNet-18</td>
         <td>
           <img src="./readme_imgs/fig_10.png" width="250">
         </td>
@@ -535,7 +538,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
   |&#9745;|[RNN](https://arxiv.org/abs/1409.2329)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/rnn.py) |
 
 
-### 3.1 Integrating Different Models<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
+### 3.2 Integrating Different Models<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
 - **Offline integration: build and pre-train an FBS version of your model.** The FBS module keeps the weights of an original layer and adds a channel-importance predictor, which is what enables block-grained scaling at runtime.
 
@@ -615,9 +618,9 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
 - After the integration, the model can be used for online scheduling.
 
-### 3.2 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
+### 3.3 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
-#### 3.2.1 Integrating Inference-oriented Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+#### 3.3.1 Integrating Inference-oriented Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
   - **AdaInf**: Interleave incremental retraining with inference based on the severity of data drift. 
     To this scheduler, you can set the `--scheduler` argument to `AdaInf` in the command line.
@@ -661,7 +664,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     python examples/experiments/main.py --scheduler PSA
     ```
 
-#### 3.2.2 Integrating Retraining-oriented Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+#### 3.3.2 Integrating Retraining-oriented Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
   - **AdaEvo**: Schedule multiple retraining jobs based on urgency.
     To this scheduler, you can set the `--scheduler` argument to `AdaEvo` in the command line.
@@ -687,7 +690,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     python examples/experiments/main.py --scheduler EdgeTA
     ```
 
-#### 3.2.3 Integrating Other Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+#### 3.3.3 Integrating Other Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 You can integrate a new edge scheduler into LegoScaler by the following steps. A scheduler interacts with the system through one unified interface that has three parts: **when** it is triggered, **how** it makes decisions, and **how** its decisions take effect. 
 
