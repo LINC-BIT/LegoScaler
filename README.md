@@ -152,6 +152,12 @@ and energy consumption by 40.2%.
     </tbody>
   <tbody>
       <tr>
+        <td>Semantic segmentation</td>
+        <td>VOC2012</td>
+      </tr>
+    </tbody>
+  <tbody>
+      <tr>
         <td>Text classification</td>
         <td>AGNews</td>
       </tr>
@@ -186,6 +192,12 @@ and energy consumption by 40.2%.
       <tr>
         <td>Object Detection</td>
         <td>COCO2017, VOC2012</td>
+      </tr>
+    </tbody>
+  <tbody>
+      <tr>
+        <td>Semantic segmentation</td>
+        <td>VOC2012</td>
       </tr>
     </tbody>
   <tbody>
@@ -518,8 +530,8 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
   ||Model Name|Source Data|Script|
   |--|--|--|--|
-  ||[FCN (CVPR'2015)](https://openaccess.thecvf.com/content_cvpr_2015/html/Long_Fully_Convolutional_Networks_2015_CVPR_paper.html)| [PARSCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC) |[Demo]()|
-  ||[DeepLab v3 (ArXiv'2017)](https://arxiv.org/abs/1706.05587)| [PARSCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC) |[Demo]()|
+  |&#9745;|[FCN (CVPR'2015)](https://openaccess.thecvf.com/content_cvpr_2015/html/Long_Fully_Convolutional_Networks_2015_CVPR_paper.html)| [PARSCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC) |[Demo](EdgeScheduler/examples/experiments/semantic_segmentation/fcn.py)|
+  |&#9745;|[DeepLab v3 (ArXiv'2017)](https://arxiv.org/abs/1706.05587)| [PARSCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC) |[Demo](EdgeScheduler/examples/experiments/semantic_segmentation/deeplabv3.py)|
 
 
 **Action recognition**
