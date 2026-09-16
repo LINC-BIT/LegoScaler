@@ -695,9 +695,24 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
     After these six steps the model is fully integrated and can take part in online scheduling like the models listed in section 3.1.
 
-- **Online integration: wrap the FBS model in an application actor.** The simulator only interacts with `ApplicationActor` and its training/inference jobs.
+- **Online integration: wrap the FBS model in an application actor, and let the simulator drive it.** The runtime is a window loop: the simulator launches/stops jobs from the scenario events, asks the scheduler once per window what each job may do, and the jobs run for the granted slice. Training and inference jobs are model-agnostic by default — the model only enters through the app actor.
 
-  - **Step 1: Create a subclass of `ApplicationActor`.** The base class launches and stops the jobs, publishes the latest model (`get_model_ref`) and accepts updates from training workers (`update_model`).
+    ```text
+    main.py (apps + apps_events)
+          │  INFERENCE_START / TRAINING_START → launch {app}-inference / {app}-training
+          │  ..._FINISH                      → stop them (training stop rotates distribution_index)
+          ▼
+    SimulatorActor  ──  window loop, window_size = 10 s by default
+          │
+          │  every window:  scheduler.run(jobs)  →  { job_id: { max_gpu_utilization, hyps } }
+          │                 hyps = batch_size / lr / model_size (per-block densities)
+          ▼
+    job.run_for(duration = max_gpu_utilization × window_size, hyps, need_scaling)
+          ├─ training job :  sub-model generation → retrain → knowledge transfer → update_model
+          └─ inference job:  sub-model generation → serve for the window
+    ```
+
+  - **Step 1: Subclass `ApplicationActor`** — one actor per application (`app_impl.py` has one `DemoApplication_XXX` per model to copy).
 
     ```python
     from EdgeScheduler.zraysched import ApplicationActor
@@ -708,10 +723,20 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
             self.origin_fbs_model = None
     ```
 
-  - **Step 2: Implement the three hooks the base class needs**: 
-    - `init_model()` returns the FBS model (on CPU, it is published via `ray.put`)
-    - `get_fbs_model()` returns the full FBS model that is used to build scaled sub-models at runtime (cache it in `self.origin_fbs_model` like the demos);
-    - `get_dataloader_func()` returns a dataloader function selected by `self.distribution_index`, which lets you rotate among datasets to emulate an evolving input distribution
+    The base class takes care of the plumbing, so the subclass stays small:
+    - **Jobs.** It wraps the job classes with `ray.remote(num_gpus=0.5)` and launches them per event, with ids `{app_name}-training` / `{app_name}-inference` (the job derives its `model_type` from this id).
+    - **Model publication.** The constructor publishes the initial model: `self.model_ref = ray.put(self.init_model().cpu())`; jobs read it through `get_model_ref()`.
+    - **Updates.** `update_model()` (called by a training job) republishes new weights: it matches the incoming state dict against the structure files written by the jobs under `results/ours/tmp_model/` (`tmp_fbs_full_{model_type}.pth` for the fused full model, or `tmp_fbs_{model_type}.pth` for a scaled sub-model) and `ray.put`s the matching one.
+    - **Distribution rotation.** `stop_training_job()` also increments `self.distribution_index`, so the input distribution advances once per training round.
+
+  - **Step 2: Implement the hooks.**
+
+    | hook | returns |
+    |--|--|
+    | `init_model()` | the FBS checkpoint from the offline part: `torch.load(...)['main']`, on CPU (it is published via `ray.put`) |
+    | `get_fbs_model()` | the full FBS model used by the jobs to build scaled sub-models (cache it in `self.origin_fbs_model` like the demos) |
+    | `get_dataloader_func()` | a dataloader function selected by `self.distribution_index` — rotate among datasets to emulate an evolving input distribution |
+    | `get_source_dataloader_func()` *(optional)* | the dataloader of the *initial* distribution, used by the `source` model-generation strategy; defaults to the first function of your list |
 
     ```python
     def init_model(self):
@@ -727,7 +752,23 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
         return dataloaders_func[self.distribution_index % len(dataloaders_func)]
     ```
 
-  - **Step 3: Register the application and its events in `main.py`.**
+  - **Step 3: Know what the jobs do — extend them only if your model needs it** (`job_impl.py`).
+
+    Both `DemoTrainingJob` and `DemoInferenceJob` start every window by fetching the latest model (`get_model_ref`) and the full FBS model (`get_fbs_model`). When the simulator marks the window `need_scaling` (the running job set just changed, i.e. a new scenario phase) and the scheduler assigned densities via `hyps['model_size']`, the job first generates the scaled sub-model with `FBSSubModelExtractor.extract_submodel` — in inference, the sample that drives the mask comes from the current window's data (or from the source distribution for the `source` strategy).
+
+    - **Training job** — sub-model generation (recording the `neuron_indices` of the kept channels) → retrain for the window's `duration` with a per-model optimizer → knowledge transfer → `update_model`. The training split is used here.
+    - **Inference job** — sub-model generation (no neuron indices) → serve for the window. It evaluates on the **val** split and only reports metrics, never writes back.
+
+    Two environment variables (set by the demo driver before `ray.init`) switch the pipeline:
+
+    | env var | values | meaning |
+    |--|--|--|
+    | `KNOWLEDGE_TRANSFER` | `no` / `direct` / `layer` / `neuron` (default) | how the retrained knowledge returns to the inference model — evaluated in section 2.2 |
+    | `MODEL_GENERATE` | `unimportant` / `random` / `source` / `current` (default) | which neurons the scaled sub-model keeps — evaluated in section 2.3 |
+
+    Add a `self.model_type == 'XXX'` branch only if your model needs special handling: batched collation (detection targets, ViLT's image + question dicts), per-task losses, tokenizers / image processors, or metric post-processing. The jobs also pin per-model batch sizes (e.g. 8 for detection / segmentation — kept consistent with the data-generation batch size of the offline part) so that online retraining stays in the regime the accuracy predictor was trained on.
+
+  - **Step 4: Register the application and its events in `main.py`.**
 
     ```python
     from EdgeScheduler.examples.experiments.app_impl import Application_XXX
@@ -740,9 +781,10 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
                    AppEvent(app_id='XXX', timestamp=0, event_type=AppEventType.TRAINING_START), ...]
     ```
 
-    If your model needs special batching, optimization or evaluation (e.g. detection losses, tokenizers), extend the `self.model_type == 'XXX'` branches in `DemoTrainingJob.run_for` / `DemoInferenceJob.run_for` (`job_impl.py`).
+    - `apps` — one remote `Application_XXX` per application; `apps_events` — the scenario script in simulation seconds: `*_START` launches the app's job at that timestamp, `*_FINISH` stops it. The simulator processes events at window boundaries, and reschedules immediately when the scheduler reacts to the event type (see section 3.3).
+    - The run loop ties everything together: `SimulatorActor.remote(apps, apps_events, scheduler, reporter, res_save_dir=..., window_size=10)`, then `await simulator.run.remote()` — the demos of section 3.1 end with printing the per-app average accuracy from the reporter.
 
-- After the integration, the model can be used for online scheduling.
+    After this, the model is schedulable exactly like the ones listed in section 3.1: LegoScaler shrinks it by returning per-block densities in `hyps['model_size']`, while the baseline schedulers just grant GPU time through `max_gpu_utilization`.
 
 ### 3.3 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
