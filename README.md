@@ -518,9 +518,9 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
   |&#9745;|[VGG (ICLR'2015)](http://arxiv.org/abs/1409.1556)|[ImageNet](https://www.image-net.org/)| [Demo](EdgeScheduler/examples/experiments/image_classification/vgg16.py)|
   |&#9745;|[ConvNext (CVPR'2022)](https://arxiv.org/abs/2201.03545)|[ImageNet](https://www.image-net.org/)| [Demo](EdgeScheduler/examples/experiments/image_classification/convnext.py)|
   |&#9745;|[InternImage (CVPR'2023)](https://arxiv.org/abs/2211.05778)|[ImageNet](https://www.image-net.org/)| [Demo](EdgeScheduler/examples/experiments/image_classification/internimage.py)|
-  |&#9745;|[ViT (ICLR'2021)](https://arxiv.org/abs/2010.11929) |[ImageNet](https://www.image-net.org/)|[Script](EdgeScheduler/examples/experiments/FBS_nets/train/vit_fbs.py)|
-  |&#9745;|[DINOv2 (TMLR'2024)](https://arxiv.org/abs/2304.07193)|[ImageNet](https://www.image-net.org/)|[Script](EdgeScheduler/examples/experiments/FBS_nets/train/dinov2_fbs.py)|
-  |&#9745;|[CLIP (ICML'2021)](https://arxiv.org/abs/2103.00020)|[ImageNet](https://www.image-net.org/)|[Script](EdgeScheduler/examples/experiments/FBS_nets/train/clip_fbs.py)|
+  |&#9745;|[ViT (ICLR'2021)](https://arxiv.org/abs/2010.11929) |[ImageNet](https://www.image-net.org/)|[Demo](EdgeScheduler/examples/experiments/FBS_nets/train/vit_fbs.py)|
+  |&#9745;|[DINOv2 (TMLR'2024)](https://arxiv.org/abs/2304.07193)|[ImageNet](https://www.image-net.org/)|[Demo](EdgeScheduler/examples/experiments/FBS_nets/train/dinov2_fbs.py)|
+  |&#9745;|[CLIP (ICML'2021)](https://arxiv.org/abs/2103.00020)|[ImageNet](https://www.image-net.org/)|[Demo](EdgeScheduler/examples/experiments/FBS_nets/train/clip_fbs.py)|
 
 **Object detection**
 
