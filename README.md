@@ -518,9 +518,9 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
   |&#9745;|[VGG (ICLR'2015)](http://arxiv.org/abs/1409.1556)|[ImageNet](https://www.image-net.org/)| [Demo](EdgeScheduler/examples/experiments/image_classification/vgg16.py)|
   |&#9745;|[ConvNext (CVPR'2022)](https://arxiv.org/abs/2201.03545)|[ImageNet](https://www.image-net.org/)| [Demo](EdgeScheduler/examples/experiments/image_classification/convnext.py)|
   |&#9745;|[InternImage (CVPR'2023)](https://arxiv.org/abs/2211.05778)|[ImageNet](https://www.image-net.org/)| [Demo](EdgeScheduler/examples/experiments/image_classification/internimage.py)|
-  |&#9745;|[ViT (ICLR'2021)](https://arxiv.org/abs/2010.11929) |[ImageNet](https://www.image-net.org/)|[Demo](EdgeScheduler/examples/experiments/FBS_nets/train/vit_fbs.py)|
-  |&#9745;|[DINOv2 (TMLR'2024)](https://arxiv.org/abs/2304.07193)|[ImageNet](https://www.image-net.org/)|[Demo](EdgeScheduler/examples/experiments/FBS_nets/train/dinov2_fbs.py)|
-  |&#9745;|[CLIP (ICML'2021)](https://arxiv.org/abs/2103.00020)|[ImageNet](https://www.image-net.org/)|[Demo](EdgeScheduler/examples/experiments/FBS_nets/train/clip_fbs.py)|
+  |&#9745;|[ViT (ICLR'2021)](https://arxiv.org/abs/2010.11929) |[ImageNet](https://www.image-net.org/)|[Demo](EdgeScheduler/examples/experiments/image_classification/vit.py)|
+  |&#9745;|[DINOv2 (TMLR'2024)](https://arxiv.org/abs/2304.07193)|[ImageNet](https://www.image-net.org/)|[Demo](EdgeScheduler/examples/experiments/image_classification/dinov2.py)|
+  |&#9745;|[CLIP (ICML'2021)](https://arxiv.org/abs/2103.00020)|[ImageNet](https://www.image-net.org/)|[Demo](EdgeScheduler/examples/experiments/image_classification/clip.py)|
 
 **Object detection**
 
@@ -552,18 +552,18 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
   |--|--|--|--|
   |&#9745;|[LSTM](https://deeplearning.cs.cmu.edu/S23/document/readings/LSTM.pdf)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/lstm.py) |
   |&#9745;|[RNN](https://arxiv.org/abs/1409.2329)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/rnn.py) |
-  |&#9745;|[BERT (NAACL'2019)](https://arxiv.org/abs/1810.04805)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/FBS_nets/train/bert_fbs.py) |
-  |&#9745;|[RoBERTa (arXiv'2019)](https://arxiv.org/abs/1907.11692)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/FBS_nets/train/roberta_fbs.py) |
-  |&#9745;|[GPT-2 (OpenAI'2019)](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/FBS_nets/train/gpt2_fbs.py) |
-  |&#9745;|[SmolLM2-135M (arXiv'2025)](https://arxiv.org/abs/2502.02737)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/FBS_nets/train/smollm2_fbs.py) |
-  |&#9745;|[Qwen2.5-0.5B (arXiv'2024)](https://arxiv.org/abs/2412.15115)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/FBS_nets/train/qwen25_fbs.py) |
+  |&#9745;|[BERT (NAACL'2019)](https://arxiv.org/abs/1810.04805)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/bert.py) |
+  |&#9745;|[RoBERTa (arXiv'2019)](https://arxiv.org/abs/1907.11692)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/roberta.py) |
+  |&#9745;|[GPT-2 (OpenAI'2019)](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/gpt2.py) |
+  |&#9745;|[SmolLM2-135M (arXiv'2025)](https://arxiv.org/abs/2502.02737)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/smollm2.py) |
+  |&#9745;|[Qwen2.5-0.5B (arXiv'2024)](https://arxiv.org/abs/2412.15115)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/qwen25.py) |
 
 
 **Visual question answering**
 
   ||Model Name|Source Data|Script|
   |--|--|--|--|
-  |&#9745;|[ViLT (ICML'2021)](https://arxiv.org/abs/2102.03334)|[VQAv2](https://visualqa.org/)|[Demo](EdgeScheduler/examples/experiments/FBS_nets/train/vilt_fbs.py)|
+  |&#9745;|[ViLT (ICML'2021)](https://arxiv.org/abs/2102.03334)|[VQAv2](https://visualqa.org/)|[Demo](EdgeScheduler/examples/experiments/visual_question_answering/vilt.py)|
 
 
 ### 3.2 Integrating Different Models<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
