@@ -549,7 +549,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 **Text classification**
 
   ||Model Name|Source Data|Script|
-  |--|--|--|--|
+  |--|--|--|--| 
   |&#9745;|[LSTM](https://deeplearning.cs.cmu.edu/S23/document/readings/LSTM.pdf)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/lstm.py) |
   |&#9745;|[RNN](https://arxiv.org/abs/1409.2329)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Demo](EdgeScheduler/examples/experiments/text_classification/rnn.py) |
   |&#9745;|[BERT (NAACL'2019)](https://arxiv.org/abs/1810.04805)|[IMDB](https://huggingface.co/datasets/stanfordnlp/imdb)| [Script](EdgeScheduler/examples/experiments/FBS_nets/train/bert_fbs.py) |
