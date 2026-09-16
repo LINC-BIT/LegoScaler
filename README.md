@@ -191,7 +191,7 @@ and energy consumption by 40.2%.
   <tbody>
       <tr>
         <td>Object Detection</td>
-        <td>COCO2017, VOC2012</td>
+        <td>COCO2014, VOC2012</td>
       </tr>
     </tbody>
   <tbody>
