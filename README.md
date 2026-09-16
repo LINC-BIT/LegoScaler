@@ -568,9 +568,11 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
 ### 3.2 Integrating Different Models<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
-- **Offline integration: build and pre-train an FBS version of your model.** The FBS module keeps the weights of an original layer and adds a channel-importance predictor, which is what enables block-grained scaling at runtime.
+- **Offline integration: build and pre-train an FBS version of your model.** The FBS module keeps the weights of an original layer and adds a channel-importance predictor, which is what enables block-grained scaling at runtime. Taking `vit` as the running example, the offline pipeline has six steps: insert FBS → jointly fine-tune → generate scaling-law data points → train the accuracy predictor → measure latency → register the paths. Every script referenced below already exists in this repo — copy the one of the closest architecture for a new model.
 
-  - **Step 1: Convert the pre-trained model into an FBS model with `FBSModelConverter`.** Pass the architecture name via `model_type` (the converter dispatches per architecture, e.g. `vit`).
+  - **Step 1: Insert FBS into the pre-trained model.**
+
+    Call the ready-made `create_fbs_<model>()` helper in `FBS_nets/nets/create_fbs_model.py` (each helper loads the pre-trained weights, applies the model-specific pre-processing and runs the converter), or use `FBSModelConverter` directly. Pass the architecture name via `model_type` (the converter dispatches per architecture, e.g. `vit`).
 
     ```python
     from EdgeScheduler.examples.experiments.FBS_nets.nets.create_fbs_model import FBSModelConverter
@@ -581,9 +583,21 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     fbs_model = converter.convert_model(model)
     ```
 
-    To support a new architecture, add a branch in `FBSModelConverter.convert_model` that wraps the layers/blocks to be scaled with `FBS(original_layer=..., in_channels=..., out_channels=..., density=..., model_type='XXX')`.
+    How an FBS module works (class `FBS` in the same file):
+    - it keeps the original layer untouched (`original_layer`) and adds a channel-importance predictor with architecture `Linear(in, 2*in) → ReLU → Linear(2*in, out)` (hidden dim `= in` when `in >= 2000`);
+    - the input feature map is subsampled into one scalar per input channel (`subsample_method='l1_norm'`, the mean of `|x|` over the spatial/sequence dims; `'avg_pool'` is the alternative), and the predictor outputs one saliency score per output channel;
+    - `density` decides how many channels are kept: `k = max(1, int(density * out_channels))`; the forward pass multiplies the layer output with a per-sample k-winners-take-all mask built from the scores (this `dynamic_mask` is also what the sub-model extractor reads at scheduling time);
+    - for `detr` / `yolos` the mask is applied with a straight-through estimator (`STE_MODEL_TYPES`) so the task-loss gradient flows back into the predictor during fine-tuning; other architectures can pass `ste=True` explicitly for ablation.
 
-  - **Step 2: Jointly fine-tune the FBS model with `FBSJointTrainer`.** Dataloader functions follow the signature `get_XXX_dataloader(split, batch_size, model_type=None) -> (loader, dataset)`.
+    Model-specific notes (see the `create_fbs_*` helpers for the exact wrapped layers):
+    - `vit`: FBS sits on the attention Q/K/V projections and the FFN `intermediate.dense`; the QKV linear layers are first SVD-decomposed (`svd_decompose_linear`) so attention can be scaled too; the 12 encoder layers form **6 scaled blocks** (one density per 2 layers). `yolos` reuses the same ViT-backbone rule (its detection heads stay untouched);
+    - `resnet18` / `vgg16` / `mobilenetv2` / `convnext` / `internimage` wrap convolution (or ConvNeXt-style linear) blocks; `lstm` / `rnn` / `gpt2` / `bert` / `roberta` / `smollm2` / `qwen25` wrap projection/FFN linears; `faster_rcnn` / `detr` / `fcn` / `deeplabv3` have their own branches.
+
+    Create the model with `density=1.0` — the per-block densities are only drawn later, at data-point-generation / scheduling time.
+
+    To support a new architecture, add a branch in `FBSModelConverter.convert_model` that wraps the layers/blocks to be scaled with `FBS(original_layer=..., in_channels=..., out_channels=..., density=..., model_type='XXX')` (plus a matching entry in `FBS.forward`'s mask-shape dispatch).
+
+  - **Step 2: Jointly fine-tune the FBS model with `FBSJointTrainer`.** Dataloader functions follow the signature `get_XXX_dataloader(split, batch_size, model_type=None) -> (loader, dataset)`; reference scripts are `FBS_nets/train/<model>_fbs.py`.
 
     ```python
     from EdgeScheduler.examples.experiments.FBS_nets.utils import FBSJointTrainer
@@ -593,9 +607,46 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     val_loader, _   = get_XXX_dataloader('val',   batch_size=64, model_type='XXX')
 
     trainer = FBSJointTrainer(model=fbs_model, train_loader=train_loader, val_loader=val_loader,
-                              device='cuda', num_classes=..., model_type='XXX', num_epochs=...)
-    trainer.train(save_dir='/path/to/fbs_checkpoints')
+                              device='cuda', num_classes=..., model_type='XXX', num_epochs=20)
+    trainer.train(epochs=20, save_dir='/path/to/fbs_checkpoints', task_type='cls')
     ```
+
+    What the trainer configures:
+    - parameters are split into two optimizer groups — **main network** and **FBS predictors** (`'predictor' in name`) — under Adam with weight decay `1e-4`, both groups at the same base lr by default. Per-`model_type` base lr (override via the `lr=` argument): `vit` / `clip` / `dinov2` / `lstm` / `rnn` / `detr` / `yolos` `1e-4`, `vilt` `5e-5`, `convnext` / `internimage` / `vgg16` `3e-4`, `cnn` / `fcn` / `deeplabv3` `1e-3`, `faster_rcnn` `0.01`, `gpt2` / `bert` / `roberta` `1e-5`, `smollm2` / `qwen25` `5e-5`;
+    - adapted recipes for detection / segmentation: `detr` / `yolos` switch to AdamW with the backbone at lr/10 (a uniform large lr destroys the pre-trained features — DETR degenerates to predicting "no object"; `detr` additionally gives the FBS predictors 5x lr); `faster_rcnn` (SGD, momentum 0.9) and `fcn` / `deeplabv3` (SGD, momentum 0.9, weight decay `5e-4`) give the randomly-initialized FBS predictors 10x lr;
+    - the loss is `task loss + lambda_reg * L1(saliency scores)` averaged over all FBS modules with `lambda_reg = 3e-3` — this shapes the scores so that density scaling is meaningful;
+    - `train(epochs, save_dir, task_type)` supports four task loops: `cls` (accuracy), `det` (mAP, used by `yolos`), `seg` (mIoU), `vqa` (VQA accuracy) — e.g. `vilt_fbs.py` trains with `task_type='vqa'` and `yolos_fbs_voc.py` with `task_type='det'`;
+    - checkpoints: `latest_fbs_{model_type}_model.pth` (every epoch) and `best_fbs_{model_type}_model.pth` (best validation score), both saved as `{'main': model}` — the format `init_model()` in the online part expects. Concrete example: `vit_fbs.py` fine-tunes 20 epochs on Caltech-256 (`batch_size=64`, `num_classes=1000`) and produces `best_fbs_vit_model.pth`.
+
+  - **Step 3: Generate the scaling-law data points** that teach the accuracy predictor how accuracy depends on the configuration — `schedulers/predictor/scaling_law/cnn/1_gen.py`:
+    - set `model_type` / `task_type` (the source/target dataset pools come from a scenario in `motivation/edge_scaling_law/offline/settings.py`, e.g. `image_classification_scenario`; detection and segmentation have their own scenario with a source domain and rotating target domains);
+    - fill `dict_paths[model_type]` with the FBS checkpoint produced in Step 2;
+    - `num_blocks` fixes how many density-controlled blocks the model has: `resnet18` 8, `mobilenetv2` 8, `vgg16` 6, `convnext` 12, `internimage` 8, `vit` / `clip` / `dinov2` 6, `faster_rcnn` 4, `detr` 4, `yolos` 6, `fcn` / `deeplabv3` 4, `lstm` / `rnn` 1, `gpt2` / `bert` / `smollm2` / `qwen25` 6;
+    - the loop (`GenScalingLawDataPointsAlg.run`) draws `max_num_trials` (1000) random trials. Each trial samples one density per block from `U(0.4, 1.0)` (`yolos`: `U(0.6, 1.0)`), a batch size from `optional_batch_sizes` (`[8]`) and a random simulation-augmentation policy; then, for a randomly chosen source dataset of the scenario, it (1) extracts the sub-model for that density vector with `FBSSubModelExtractor.extract_submodel` (`FBS_nets/utils.py`), (2) retrains it for `num_iters` (100) iterations with `FeatureAlignmentAlg` (`methods/feature_alignment/`; Adam at the per-model lr, `feat_align_loss_weight 3.0`, fp16) and (3) evaluates every `val_freq` (10) iterations on the target distribution;
+    - each evaluation becomes one labeled data point `(configuration) -> accuracy`, where the configuration features are the per-block densities, the retraining iterations and iterations×batch size, the source–target feature distance and four feature statistics;
+    - output: `cnn/results/1_gen.py/<date>/<trial>-<model>-results/scaling_law_data_points.pth` (one retraining trial contributes `num_iters + num_iters//val_freq` points); optionally merge several runs with `cnn/combine_scaling_law_data_points.py` into `cnn/scaling_law_data_points/<model>/combined_*.pth`.
+
+  - **Step 4: Train the accuracy predictor** with `schedulers/predictor/scaling_law/scaling_law_trial/two_branch.py`:
+    - pick `model_type`, point the data-points path at Step 3's output, and set the predictor's input dimension `features_dim` (e.g. `vit` / `clip` / `gpt2` / `bert` / `vilt` 768, `dinov2` 384, `yolos` 192, `resnet18` 512 — the full table is in the script);
+    - key arguments of `train(...)`: `dataset_index` (which source dataset of the points to use), `num_data_points_in_a_retraining` (`= num_iters + num_iters//val_freq` of Step 3, e.g. 110 for 100/10), training `num_iters` (20000 in the current runs) and `val_freq` (1000). The script splits the points 4:1 into train/val **by retraining trial** and fits `EdgeScalingLaw` (the two-branch model);
+    - optimizer: Adam on two groups — the network at `lr[model][0]` and the source/target variance parameters (`p_sv`, `p_tv`) at `lr[model][1]`; typical pairs: `(1e-4, 3e-4)` for most models, `(1e-6, 1e-5)` for `vit` / `clip` / `dinov2`, `(1e-5, 5e-5)` for `yolos` / `smollm2` / `qwen25`; StepLR (decay to 0.1 at 2/5 of the run); MSE loss; validation reports the mean abs/relative error and saves the best checkpoint as `best_edge_scaling_law_fcn.pt` (a previous predictor can be used as a warm start via `model_dict_path`).
+
+  - **Step 5: Measure single-sample latency** with `FBS_nets/measure_latency.py`. It times the pure forward pass of one sample at `density=1.0`, batch size 1, for each model's FBS structure (deliberately without loading any checkpoint — latency depends only on the structure and the density), on the dataset the model normally uses.
+
+    ```bash
+    cd EdgeScheduler/examples/experiments/FBS_nets
+    python measure_latency.py                  # all models
+    python measure_latency.py vit bert yolos   # selected models
+    python measure_latency.py --device cuda:3 --iters 100 --warmup 20
+    ```
+
+    It prints per-model median/mean/min/max and writes `latency_results.json` (field `latency_data_ms`); the scheduler scales this value linearly by `mean(densitys)` for any candidate configuration.
+
+  - **Step 6: Register the produced paths.**
+    - `DemoApplication_XXX.init_model()` in `app_impl.py` → the FBS checkpoint from Step 2;
+    - in `schedulers/retraining/ours.py`: `predictor_model_paths['XXX']` → the `best_edge_scaling_law_fcn.pt` from Step 4; `PREDICTOR_SPECS` maps the job-id substring to `(model_type, in_channel)` using the same feature dimension as Step 4; `latency_data_path` → the `latency_results.json` from Step 5.
+
+    After these six steps the model is fully integrated and can take part in online scheduling like the models listed in section 3.1.
 
 - **Online integration: wrap the FBS model in an application actor.** The simulator only interacts with `ApplicationActor` and its training/inference jobs.
 
