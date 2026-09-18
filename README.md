@@ -28,6 +28,8 @@ for Mixed Inference and Retraining Jobs at Edge"**.
 <a href="#3-reusability-integrating-legoscaler-with-models-and-edge-schedulers">3. Reusability: Integrating LegoScaler with Models and Edge Schedulers</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-supported-models">3.1 Supported Models</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-integrating-different-models">3.2 Integrating Different Models</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#321-offline-integration">3.2.1 Offline integration</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#322-online-integration">3.2.2 Online integration</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-integrating-different-edge-schedulers">3.3 Integrating Different Edge Schedulers</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#331-integrating-inference-oriented-schedulers">3.3.1 Integrating Inference-oriented Schedulers</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#332-integrating-retraining-oriented-schedulers">3.3.2 Integrating Retraining-oriented Schedulers</a><br>
@@ -568,6 +570,8 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
 ### 3.2 Integrating Different Models<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
+#### 3.2.1 Offline integration<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
 - **Offline integration: from a pre-trained model to a schedulable FBS model.** The FBS module keeps the weights of an original layer and adds a channel-importance predictor — that is what enables block-grained scaling at runtime. The pipeline has six steps, each producing the artifact the next one consumes; every script already exists in this repo, so for a new architecture just copy the closest one.
 
     ```text
@@ -696,6 +700,8 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
     After these six steps the model is fully integrated and can take part in online scheduling like the models listed in section 3.1.
 
+#### 3.2.2 Online integration<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
 - **Online integration: wrap the FBS model in an application actor, and let the simulator drive it.** The runtime is a window loop: the simulator launches/stops jobs from the scenario events, asks the scheduler once per window what each job may do, and the jobs run for the granted slice. Training and inference jobs are model-agnostic by default — the model only enters through the app actor.
 
     ```text
@@ -788,6 +794,8 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     - The run loop ties everything together: `SimulatorActor.remote(apps, apps_events, scheduler, reporter, res_save_dir=..., window_size=10)`, then `await simulator.run.remote()` — the demos of section 3.1 end with printing the per-app average accuracy from the reporter.
 
     After this, the model is schedulable exactly like the ones listed in section 3.1: LegoScaler shrinks it by returning per-block densities in `hyps['model_size']`, while the baseline schedulers just grant GPU time through `max_gpu_utilization`.
+
+
 
 ### 3.3 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
