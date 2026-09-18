@@ -24,9 +24,9 @@
 
 - **Action recognition: TSN**
 
-|     |                              Results                              |
-|:---:|:-----------------------------------------------------------------:|
-| **Working example** | <img src="../readme_imgs/" alt="Intefration" style="zoom:33%;" /> |
+|     |                                    Results                                     |
+|:---:|:------------------------------------------------------------------------------:|
+| **Working example** | <img src="../readme_imgs/3.2.2-tsn.png" alt="Intefration" style="zoom:33%;" /> |
 
 - **Text classification: RoBERTa**
 
