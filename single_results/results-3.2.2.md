@@ -4,17 +4,17 @@
 
 ### 3.2.2 Online integration<img src="./heading-divider-h4.svg" alt="" width="100%" height="1">
 
-- **Image classification: ConvNext**
+- **Image classification: ViT**
 
 |     |                              Results                              |
 |:---:|:-----------------------------------------------------------------:|
-| **Working example** | <img src="../readme_imgs/" alt="Intefration" style="zoom:33%;" /> |
+| **Working example** | <img src="../readme_imgs/3.2.2-vit.png" alt="Intefration" style="zoom:33%;" /> |
 
 - **Object detection: YOLOS**
 
 |     |                                    Results                                     |
 |:---:|:------------------------------------------------------------------------------:|
-| **Working example** | <img src="../readme_imgs/3.2.2-vit.png" alt="Intefration" style="zoom:33%;" /> |
+| **Working example** | <img src="../readme_imgs/" alt="Intefration" style="zoom:33%;" /> |
 
 - **Semantic segmentation: DeepLab v3**
 
