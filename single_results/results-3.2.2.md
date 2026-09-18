@@ -4,9 +4,38 @@
 
 ### 3.2.2 Online integration<img src="./heading-divider-h4.svg" alt="" width="100%" height="1">
 
+- **Image classification: ConvNext**
 
-|     | Results |
-|:---:|:---:|
-| **Working example** | <img src="../readme_imgs/" alt="online-intefration" style="zoom:33%;" /> |
+|     |                              Results                              |
+|:---:|:-----------------------------------------------------------------:|
+| **Working example** | <img src="../readme_imgs/" alt="Intefration" style="zoom:33%;" /> |
 
-<br><br>
+- **Object detection: YOLOS**
+
+|     |                                    Results                                     |
+|:---:|:------------------------------------------------------------------------------:|
+| **Working example** | <img src="../readme_imgs/3.2.2-vit.png" alt="Intefration" style="zoom:33%;" /> |
+
+- **Semantic segmentation: DeepLab v3**
+
+|     |                              Results                              |
+|:---:|:-----------------------------------------------------------------:|
+| **Working example** | <img src="../readme_imgs/" alt="Intefration" style="zoom:33%;" /> |
+
+- **Action recognition: TSN**
+
+|     |                              Results                              |
+|:---:|:-----------------------------------------------------------------:|
+| **Working example** | <img src="../readme_imgs/" alt="Intefration" style="zoom:33%;" /> |
+
+- **Text classification: RoBERTa**
+
+|     |                              Results                              |
+|:---:|:-----------------------------------------------------------------:|
+| **Working example** | <img src="../readme_imgs/" alt="Intefration" style="zoom:33%;" /> |
+
+- **Visual question answering: ViLT**
+
+|     |                              Results                              |
+|:---:|:-----------------------------------------------------------------:|
+| **Working example** | <img src="../readme_imgs/" alt="Intefration" style="zoom:33%;" /> |
