@@ -18,9 +18,9 @@
 
 - **Semantic segmentation: DeepLab v3**
 
-|     |                              Results                              |
-|:---:|:-----------------------------------------------------------------:|
-| **Working example** | <img src="../readme_imgs/" alt="Intefration" style="zoom:33%;" /> |
+|     |                                       Results                                        |
+|:---:|:------------------------------------------------------------------------------------:|
+| **Working example** | <img src="../readme_imgs/3.2.2-deeplabv3.png" alt="Intefration" style="zoom:33%;" /> |
 
 - **Action recognition: TSN**
 
