@@ -656,7 +656,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
       | classification CNNs | `resnet18` 8, `mobilenetv2` 8, `vgg16` 6, `convnext` 12, `internimage` 8 |
       | vision transformers | `vit` / `clip` / `dinov2` 6, `yolos` 6 |
       | detection / segmentation | `faster_rcnn` 4, `detr` 4, `fcn` / `deeplabv3` 4 |
-      | video action recognition | `tsn` / `trn` 8 (the ResNet-18 conv1 of each basic block) |
+      | video action recognition | `tsn` / `trn` 8 |
       | text | `lstm` / `rnn` 1, `gpt2` / `bert` / `smollm2` / `qwen25` 6 |
 
     **What one trial does** (the loop draws `max_num_trials = 1000`):
