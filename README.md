@@ -759,8 +759,6 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
         return dataloaders_func[self.distribution_index % len(dataloaders_func)]
     ```
 
-    **Video drift domains.** When a rotated-in dataset does not share the model's label space (e.g. UCF101 / IXMAS against the HMDB51 51-class head), do not feed it raw — `data.py::get_ucf101_dataloader` / `get_ixmas_dataloader` keep only the classes shared with HMDB51 (`fencing` / `punch`; `kick` / `punch` / `walk` / `wave`) and relabel them into the HMDB51 index space. This is the online counterpart of the `close_set` mapping in `action_recognition_scenario`, and the same trick as `get_coco2014_val_dataloader` cutting COCO down to the detector's VOC classes.
-
   - **Step 3: Know what the jobs do — extend them only if your model needs it** (`job_impl.py`).
 
     Both `DemoTrainingJob` and `DemoInferenceJob` start every window by fetching the latest model (`get_model_ref`) and the full FBS model (`get_fbs_model`). When the simulator marks the window `need_scaling` (the running job set just changed, i.e. a new scenario phase) and the scheduler assigned densities via `hyps['model_size']`, the job first generates the scaled sub-model with `FBSSubModelExtractor.extract_submodel` — in inference, the sample that drives the mask comes from the current window's data (or from the source distribution for the `source` strategy).
