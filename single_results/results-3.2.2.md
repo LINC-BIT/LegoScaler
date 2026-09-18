@@ -12,9 +12,9 @@
 
 - **Object detection: YOLOS**
 
-|     |                                    Results                                     |
-|:---:|:------------------------------------------------------------------------------:|
-| **Working example** | <img src="../readme_imgs/" alt="Intefration" style="zoom:33%;" /> |
+|     |                                     Results                                      |
+|:---:|:--------------------------------------------------------------------------------:|
+| **Working example** | <img src="../readme_imgs/3.2.2-yolos.png" alt="Intefration" style="zoom:33%;" /> |
 
 - **Semantic segmentation: DeepLab v3**
 
