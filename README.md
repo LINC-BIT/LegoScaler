@@ -793,7 +793,24 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
     After this, the model is schedulable exactly like the ones listed in section 3.1: LegoScaler shrinks it by returning per-block densities in `hyps['model_size']`, while the baseline schedulers just grant GPU time through `max_gpu_utilization`.
 
+    - The example resource requirements and outputs are listed below:
 
+      <table align="center">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Resource Requirements</th>
+            <th>Example Running Outputs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Working example</td>
+            <td>2 minutes for training, 1 minute for initialization and evaluation<br>20GB memory<br>30GB disk space</td>
+            <td><a href="./single_results/results-3.2.2.md">Link</a></td>
+          </tr>
+        </tbody>
+      </table>
 
 ### 3.3 Integrating Different Edge Schedulers<img src="./readme_imgs/heading-divider.svg" alt="" width="100%" height="1">
 
