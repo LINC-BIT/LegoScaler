@@ -542,8 +542,8 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
   
   ||Model Name|Source Data|Script|
   |--|--|--|--|
-  ||[TSN (ECCV'2016)](https://link.springer.com/chapter/10.1007/978-3-319-46484-8_2)|[HDMB51](https://serre-lab.clps.brown.edu/resource/hmdb-a-large-human-motion-database/#Downloads)|[Demo]()|
-  ||[TRN (ECCV'2018)](https://openaccess.thecvf.com/content_ECCV_2018/html/Bolei_Zhou_Temporal_Relational_Reasoning_ECCV_2018_paper.html)|[HDMB51](https://serre-lab.clps.brown.edu/resource/hmdb-a-large-human-motion-database/#Downloads)|[Demo]()|
+  |&#9745;|[TSN (ECCV'2016)](https://link.springer.com/chapter/10.1007/978-3-319-46484-8_2)|[HMDB51](https://serre.lab.brown.edu/hmdb51.html)|[Demo](EdgeScheduler/examples/experiments/action_recognition/tsn.py)|
+  |&#9745;|[TRN (ECCV'2018)](https://openaccess.thecvf.com/content_ECCV_2018/html/Bolei_Zhou_Temporal_Relational_Reasoning_ECCV_2018_paper.html)|[HMDB51](https://serre.lab.brown.edu/hmdb51.html)|[Demo](EdgeScheduler/examples/experiments/action_recognition/trn.py)|
 
 
 **Text classification**
@@ -640,14 +640,14 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     - **Special recipes for detection / segmentation.**
       - `detr` / `yolos`: AdamW with the backbone at lr/10 — a uniform large lr destroys the pre-trained features (DETR degenerates to predicting "no object"); `detr` additionally gives the FBS predictors 5x lr.
       - `faster_rcnn` (SGD, momentum 0.9) and `fcn` / `deeplabv3` (SGD, momentum 0.9, wd `5e-4`): the randomly-initialized FBS predictors get 10x lr.
-    - **Loss.** `task loss + lambda_reg × L1(saliency scores)`, averaged over all FBS modules with `lambda_reg = 3e-3` — it shapes the scores so that density scaling is meaningful.
+    - **Objective.** `task loss + lambda_reg × L1 penalty on the saliency scores`, averaged over all FBS modules with `lambda_reg = 3e-3` — the second term is a **regularizer, not a loss** (the logs report it separately as `正则项`, and the training-history figure does not draw its curve); it shapes the scores so that density scaling is meaningful.
     - **Task loop.** `train(epochs, save_dir, task_type)` with `task_type` ∈ {`cls` (accuracy), `det` (mAP), `seg` (mIoU), `vqa` (VQA accuracy)}. `vilt_fbs.py` uses `vqa`; `yolos_fbs_voc.py` uses `det`.
     - **Output.** `latest_fbs_{model_type}_model.pth` (every epoch) and `best_fbs_{model_type}_model.pth` (best validation score), both `{'main': model}` — exactly what `init_model()` expects. Example: `vit_fbs.py` fine-tunes 20 epochs on Caltech-256 (`batch_size=64`, `num_classes=1000`).
 
   - **Step 3: Generate the scaling-law data points** — `schedulers/predictor/scaling_law/cnn/1_gen.py`. This step teaches the accuracy predictor how accuracy depends on configuration: it retrains many random scaled sub-models and records `configuration → accuracy`.
 
     **Configure the script:**
-    - `model_type` / `task_type`; the dataset pools come from a scenario in `motivation/edge_scaling_law/offline/settings.py` (e.g. `image_classification_scenario`; detection and segmentation have their own scenarios, each with a source domain and rotating target domains).
+    - `model_type` / `task_type`; the dataset pools come from a scenario in `motivation/edge_scaling_law/offline/settings.py` (e.g. `image_classification_scenario`; detection, segmentation and action recognition have their own scenarios, each with a source domain and rotating target domains — `action_recognition_scenario` uses HMDB51 as source and HMDB51 → UCF101 → IXMAS as target domains).
     - `dict_paths[model_type]` → the FBS checkpoint produced in Step 2.
     - `num_blocks` — how many density-controlled blocks the model has:
 
@@ -656,6 +656,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
       | classification CNNs | `resnet18` 8, `mobilenetv2` 8, `vgg16` 6, `convnext` 12, `internimage` 8 |
       | vision transformers | `vit` / `clip` / `dinov2` 6, `yolos` 6 |
       | detection / segmentation | `faster_rcnn` 4, `detr` 4, `fcn` / `deeplabv3` 4 |
+      | video action recognition | `tsn` / `trn` 8 (the ResNet-18 conv1 of each basic block) |
       | text | `lstm` / `rnn` 1, `gpt2` / `bert` / `smollm2` / `qwen25` 6 |
 
     **What one trial does** (the loop draws `max_num_trials = 1000`):
@@ -668,12 +669,12 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
   - **Step 4: Train the accuracy predictor** — `schedulers/predictor/scaling_law/scaling_law_trial/two_branch.py`, which fits `EdgeScalingLaw` (the two-branch model) on the Step-3 points.
 
-    - **Inputs.** `model_type`, the data-points path, and the predictor's input dimension `features_dim` — `vit` / `clip` / `gpt2` / `bert` / `vilt` 768, `dinov2` 384, `yolos` 192, `resnet18` 512 (full table in the script).
+    - **Inputs.** `model_type`, the data-points path, and the predictor's input dimension `features_dim` — `vit` / `clip` / `gpt2` / `bert` / `vilt` 768, `dinov2` 384, `yolos` 192, `resnet18` 512, `tsn` 512 / `trn` 1024 (the video models hook the frame features before `backbone.fc` and the relation features before `classifier` respectively; full table in the script).
     - **Split.** `num_data_points_in_a_retraining` = `num_iters + num_iters//val_freq` of Step 3 (e.g. 110 for 100/10); the points are split 4:1 train/val **by retraining trial**; optionally keep a single source dataset via `dataset_index`.
     - **Training.** Adam on two groups — the network at `lr[model][0]`, the source/target variance parameters (`p_sv`, `p_tv`) at `lr[model][1]`; typical pairs: `(1e-4, 3e-4)` for most models, `(1e-6, 1e-5)` for `vit` / `clip` / `dinov2`, `(1e-5, 5e-5)` for `yolos` / `smollm2` / `qwen25`. StepLR (decay to 0.1 at 2/5 of the run), MSE loss, 20000 iters with validation every 1000.
     - **Output.** mean abs/relative validation error and scatter plots; best weights saved as `best_edge_scaling_law_fcn.pt`; a previous predictor can warm-start via `model_dict_path`.
 
-  - **Step 5: Measure single-sample latency** — `FBS_nets/measure_latency.py`. The scheduler needs to know how slow a configuration is: this script times the **pure forward pass of one sample at `density=1.0`, batch size 1** for each model's FBS structure — no checkpoint is loaded, since latency depends only on the structure and the density — using the dataset each model normally runs on.
+  - **Step 5: Measure single-sample latency** — `FBS_nets/measure_latency.py`. The scheduler needs to know how slow a configuration is: this script times the **pure forward pass of one sample at `density=1.0`, batch size 1** for each model's FBS structure — no checkpoint is loaded, since latency depends only on the structure and the density — using the dataset each model normally runs on (for `tsn` / `trn` one HMDB51 clip of 8 frames, i.e. input `[1, 8, 3, 224, 224]`; frame decoding happens when the sample is fetched and is not counted).
 
     ```bash
     cd EdgeScheduler/examples/experiments/FBS_nets
@@ -752,6 +753,8 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
         return dataloaders_func[self.distribution_index % len(dataloaders_func)]
     ```
 
+    **Video drift domains.** When a rotated-in dataset does not share the model's label space (e.g. UCF101 / IXMAS against the HMDB51 51-class head), do not feed it raw — `data.py::get_ucf101_dataloader` / `get_ixmas_dataloader` keep only the classes shared with HMDB51 (`fencing` / `punch`; `kick` / `punch` / `walk` / `wave`) and relabel them into the HMDB51 index space. This is the online counterpart of the `close_set` mapping in `action_recognition_scenario`, and the same trick as `get_coco2014_val_dataloader` cutting COCO down to the detector's VOC classes.
+
   - **Step 3: Know what the jobs do — extend them only if your model needs it** (`job_impl.py`).
 
     Both `DemoTrainingJob` and `DemoInferenceJob` start every window by fetching the latest model (`get_model_ref`) and the full FBS model (`get_fbs_model`). When the simulator marks the window `need_scaling` (the running job set just changed, i.e. a new scenario phase) and the scheduler assigned densities via `hyps['model_size']`, the job first generates the scaled sub-model with `FBSSubModelExtractor.extract_submodel` — in inference, the sample that drives the mask comes from the current window's data (or from the source distribution for the `source` strategy).
@@ -766,7 +769,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
     | `KNOWLEDGE_TRANSFER` | `no` / `direct` / `layer` / `neuron` (default) | how the retrained knowledge returns to the inference model — evaluated in section 2.2 |
     | `MODEL_GENERATE` | `unimportant` / `random` / `source` / `current` (default) | which neurons the scaled sub-model keeps — evaluated in section 2.3 |
 
-    Add a `self.model_type == 'XXX'` branch only if your model needs special handling: batched collation (detection targets, ViLT's image + question dicts), per-task losses, tokenizers / image processors, or metric post-processing. The jobs also pin per-model batch sizes (e.g. 8 for detection / segmentation — kept consistent with the data-generation batch size of the offline part) so that online retraining stays in the regime the accuracy predictor was trained on.
+    Add a `self.model_type == 'XXX'` branch only if your model needs special handling: batched collation (detection targets, ViLT's image + question dicts), per-task losses, tokenizers / image processors, or metric post-processing. The jobs also pin per-model batch sizes (e.g. 8 for detection / segmentation / video — kept consistent with the data-generation batch size of the offline part) so that online retraining stays in the regime the accuracy predictor was trained on. Video clips need no new collation: a batch is one `[B, T, 3, H, W]` tensor, which the generic classification path already handles.
 
   - **Step 4: Register the application and its events in `main.py`.**
 
