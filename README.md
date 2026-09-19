@@ -806,7 +806,7 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
         <tbody>
           <tr>
             <td>Working example</td>
-            <td>2 minutes for training, 1 minute for initialization and evaluation<br>20GB memory<br>30GB disk space</td>
+            <td>20GB memory<br>30GB disk space</td>
             <td><a href="./single_results/results-3.2.2.md">Link</a></td>
           </tr>
         </tbody>
