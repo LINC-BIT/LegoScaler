@@ -33,9 +33,3 @@
 |     |                                      Results                                      |
 |:---:|:---------------------------------------------------------------------------------:|
 | **Working example** | <img src="../readme_imgs/3.2.2-qwen25.png" alt="Intefration" style="zoom:33%;" /> |
-
-- **Visual question answering: ViLT**
-
-|     |                              Results                              |
-|:---:|:-----------------------------------------------------------------:|
-| **Working example** | <img src="../readme_imgs/" alt="Intefration" style="zoom:33%;" /> |
