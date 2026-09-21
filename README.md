@@ -499,7 +499,7 @@ python examples/experiments/energy_consumption.py --scheduler uniform
       <tr>
         <td>1 hour<br>20GB memory<br>50GB disk space</td>
         <td>
-          <img src="./readme_imgs/table_3.png" width="250">
+          [ENERGY]     ours | net(-idle)   duration    55.15 s | energy       876.23 J ( 0.2434 Wh) | avg power    15.89 W
         </td>
       </tr>
     </tbody>
