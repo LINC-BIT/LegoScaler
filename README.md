@@ -34,6 +34,7 @@ for Mixed Inference and Retraining Jobs at Edge"**.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#331-integrating-inference-oriented-schedulers">3.3.1 Integrating Inference-oriented Schedulers</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#332-integrating-retraining-oriented-schedulers">3.3.2 Integrating Retraining-oriented Schedulers</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#333-integrating-other-edge-schedulers">3.3.3 Integrating Other Schedulers</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#334-worked-example-how-ekya-is-integrated">3.3.4 Worked Example: How Ekya Is Integrated</a><br>
 
 
 ## 1. Artifact Overview
@@ -867,52 +868,182 @@ Retraining-oriented schedulers decide **whether, when and how much to retrain** 
 
 #### 3.3.3 Integrating Other Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
-You can integrate a new edge scheduler into LegoScaler by the following steps. A scheduler interacts with the system through one unified interface that has three parts: **when** it is triggered, **how** it makes decisions, and **how** its decisions take effect. 
+A scheduler talks to LegoScaler through one small interface that has three parts: **when** it is triggered, **what it may do inside a decision round**, and **how its decisions take effect**. Every scheduler in [3.3.1](#331-integrating-inference-oriented-schedulers) and [3.3.2](#332-integrating-retraining-oriented-schedulers) is built on it, and [3.3.4](#334-worked-example-how-ekya-is-integrated) walks through one of them line by line.
 
-- **Step 1: Implement your scheduler class.** Create a file such as `EdgeScheduler/schedulers/retraining/my_scheduler.py`, subclass `Scheduler` (or `PeriodicScheduler`) from `EdgeScheduler.zraysched`, and fill in the three parts of the interface:
+**Part 1 - when the scheduler is triggered: `reacted_events_type()`**
 
-    - **Declare when the scheduler is triggered** in `reacted_events_type()`. Return the events that wake it up (e.g. `AppEventType.INFERENCE_START`) for event-driven scheduling; return `SchedulingTiming.EACH_WINDOW` to decide every time window; or return `SchedulingTiming.PERIODIC` to decide at a fixed interval.
-    - **Implement the decision logic** in `async run(self, jobs)`, where `jobs` is `{job_id: job}` of all currently running jobs. A `job_id` follows the form `{app_name}-training` / `{app_name}-inference`, so you can tell the job type with `'train' in job_id` and the model name with `job_id.split('-')[0]`.
-    - **Express the decisions through the return value** of `run()`: a dict `{job_id: {...}}`. Each entry supports `max_gpu_utilization` (the fraction of the next time window the job is allowed to run) and an optional `hyps` dict that is passed to the job's `run_for` (e.g. `batch_size`/`lr` for training; `model_size` for the block-grained scaling of LegoScaler).
+Return one or more of the three trigger modes:
+
+| Mode | Return value | When `run()` is called |
+|------|--------------|------------------------|
+| Job-set event | `[AppEventType.TRAINING_START, AppEventType.TRAINING_FINISH, AppEventType.INFERENCE_START, AppEventType.INFERENCE_FINISH]` (any subset) | whenever one of those events fires, i.e. a job starts or finishes |
+| Every window | `[SchedulingTiming.EACH_WINDOW]` | at the start of every scheduling window (`--window-size`, default 10 s) |
+| Fixed period | subclass `PeriodicScheduler`, whose `__init__(react_interval)` already returns `SchedulingTiming.PERIODIC` and exposes `get_react_interval()` | every `react_interval` seconds |
+
+A returned schedule stays in force until it is replaced, so a scheduler that decides rarely (event-driven or periodic) does not have to re-decide every window.
+
+**Part 2 - what the scheduler may do inside a round: `async run(self, jobs)`**
+
+`jobs` is `{job_id: job_actor_handle}` of every running job. A `job_id` has the form `{app_name}-training` / `{app_name}-inference`, so the job type is `'train' in job_id` and the model is `job_id.split('-')[0]`.
+
+Through the job handle the scheduler can read the past and probe the future:
+
+- **Read the accumulated metrics.** `await job.get_metrics()` returns what this job has reported so far: `accuracies` and `losses` as lists of `(time, value)`, plus `mem_mb` / `density` when the schedule carried a `mem_budget_mb` (the footprint actually held and the density actually used, so a budget decision can be corrected in the next round).
+- **Run a short trial inside the round.** `await job.run_for.remote(current_time, duration, ensure_no_side_effects=True, hyps=...)` runs the job for `duration` seconds **without touching the application state**: no knowledge feedback reaches the inference model and nothing is written to the memory log. A trial is also the only call that returns a value - a training trial returns `(accuracy_gain, average_accuracy, average_loss)`, an inference trial returns `average_accuracy` - which is how a scheduler measures candidate configurations before committing to one. A normal window returns nothing and reports through `get_metrics()` instead.
+- **Reuse the accuracy predictor of LegoScaler.** `EdgeScalingLawAccuracyPredictor(model_path, job, device, job_type, in_channel, model_type)` (in `EdgeScheduler/schedulers/optimizer/optimization.py`) wraps the trained predictor of one job: `await predictor.get_feature_stats()` collects the source/target feature statistics, then `await predictor.run(model_size, num_training_iters, source_target_dist_distance)` returns the accuracy predicted for a per-block density plan. The `(model_type, in_channel)` table of all supported models is `PREDICTOR_SPECS` in `EdgeScheduler/schedulers/retraining/ours.py`; `ours` combines it with `evolutionary_algorithm()` and the measured per-model latency table (`examples/experiments/FBS_nets/latency_results.json`, produced by `measure_latency.py`). All of it is importable, so a new scheduler can build on the same accuracy and latency models.
+
+`run()` is awaited by the simulator before the window starts, so it **must return quickly**: run long searches in a background task and keep returning the previous schedule until the new one is ready - this is exactly what `EkyaScheduler` does with `asyncio.create_task` (see [3.3.4](#334-worked-example-how-ekya-is-integrated)).
+
+**Part 3 - how decisions take effect: the dict returned by `run()`**
+
+```python
+{
+    'resnet18-training':  {'max_gpu_utilization': 0.6,
+                           'hyps': {'model_size': [0.8, 0.5, 0.3, 0.9, 0.7, 0.4, 0.6, 0.5]}},
+    'resnet18-inference': {'max_gpu_utilization': 0.25},
+}
+```
+
+- `max_gpu_utilization` (float in `[0, 1]`) - the fraction of the next window the job may occupy the GPU. The simulator turns it into wall time (`duration = max_gpu_utilization x window_size`) and calls `job.run_for(current_time, duration, hyps=...)`.
+- `max_cpu_utilization` (optional, default `0`) - the same for the CPU resource pool. `max_gpu_utilization: 0` together with `max_cpu_utilization > 0` moves the whole window to the CPU, which is how `cpu_offload` hands the freed GPU share to the retraining jobs.
+- `hyps` (optional) - the per-window decision dictionary handed to the job. The keys a job understands are:
+    - `model_size`: the list of per-block densities (its length must be the number of blocks of that model: 8 for ResNet-18, 4 for Faster R-CNN, 6 for ViT, ...). This is the LegoScaler scaling lever - the job re-extracts its sub-model from the FBS model at those densities when the job set changes (`need_scaling`).
+    - `batch_size`, `lr`: training hyper-parameters. Some model families override them with their own profile (detection and segmentation models to 8, LSTMs/BERT to 64, ...); see `job_impl.py`.
+    - `mem_budget_mb`: an optional soft memory budget. The job proportionally shrinks all densities (floor 0.05) so that they fit, and reports the resulting density and footprint back through `get_metrics()`.
+    - keys the job does not know are ignored - a scheduler may carry private keys, but they only take effect if the job reads them.
+- A `job_id` that is **absent from the dict is not scheduled at all** in that window, and the returned dict replaces the previous schedule entirely.
+
+**Part 4 - implement, register, parametrize**
+
+1. **Implement the class** in `EdgeScheduler/schedulers/retraining/my_scheduler.py`; the skeleton in `schedulers/retraining/template.py` shows the minimal shape:
 
     ```python
     from EdgeScheduler.zraysched import Scheduler, AppEventType, SchedulingTiming
 
     class MyScheduler(Scheduler):
         def reacted_events_type(self):
-            return [AppEventType.INFERENCE_START, AppEventType.TRAINING_START]
+            return [SchedulingTiming.EACH_WINDOW]
 
         async def run(self, jobs):
             res = {}
             for job_id, job in jobs.items():
-                if 'train' not in job_id:
-                    continue
-                # your scheduling idea: decide how much GPU time and which hyper-parameters each training job should get
-                res[job_id] = {'max_gpu_utilization': 0.5,
-                               'hyps': {'batch_size': 64, 'lr': 3e-4}}
+                if 'train' in job_id:
+                    res[job_id] = {'max_gpu_utilization': 0.5,
+                                   'hyps': {'batch_size': 64, 'lr': 3e-4}}
+                else:
+                    res[job_id] = {'max_gpu_utilization': 0.1}
             return res
     ```
 
-- **Step 2: Register the scheduler** by exporting the class in `EdgeScheduler/schedulers/retraining/__init__.py`:
+2. **Export it** in `EdgeScheduler/schedulers/retraining/__init__.py`:
 
     ```python
     from .my_scheduler import MyScheduler
     ```
 
-- **Step 3: Add a selection branch in the example driver.** In `main.py`, import the class and add an entry to the scheduler-selection code. 
+3. **Add a branch to the factory** `EdgeScheduler/examples/experiments/build_scheduler.py`. This factory is the single place where schedulers are constructed - `main.py` and every per-model demo build their scheduler through it - and it is where the **constructor parameters** are injected:
 
     ```python
-    from EdgeScheduler.schedulers.retraining.my_scheduler import MyScheduler
-
-    # in the scheduler-selection part of main()
-    elif scheduler_name == "my_scheduler":
-        scheduler = ray.remote(num_gpus=0.1)(MyScheduler).remote()
+    elif scheduler_name == 'my_scheduler':
+        return ray.remote(num_gpus=0.1)(MyScheduler).remote(
+            react_interval=40, slo_ms=200.0, device=device)
     ```
 
-- After the integration, you can run the new scheduler:
+4. **Add the CLI name** to the `choices` of `--scheduler` in the driver you run from (`main.py`, and the per-model demos such as `image_classification/resnet18.py`), then:
 
     ```bash
     cd EdgeScheduler
 
-    python schedulers/examples/experiments/main.py --scheduler my_scheduler
+    python examples/experiments/main.py --scheduler my_scheduler
+    python examples/experiments/image_classification/resnet18.py --scheduler my_scheduler
     ```
+
+**Where the parameters travel**
+
+| Channel | Carries |
+|---------|---------|
+| `--scheduler <name>` | which scheduler to build |
+| `build_scheduler(name, device, training_configs=[...])` | the factory inputs; `training_configs` is the list of candidate `(lr, batch_size)` dicts that `ours` and `ekya` search over (it defaults to the image-classification profile, video models pass their own - e.g. `tsn`/`trn` use `1e-4` / `8`) |
+| constructor kwargs in the factory branch | the scheduler's own knobs: deadlines, SLOs, memory budgets, thresholds, ... (e.g. `BandScheduler(app_slos=..., device_mem_mb=...)`) |
+| `hyps` in the returned schedule | the per-window decision handed to the jobs (Part 3) |
+
+#### 3.3.4 Worked Example: How Ekya Is Integrated<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
+
+[Ekya (NSDI'22)](https://www.usenix.org/conference/nsdi22/presentation/bhardwaj) is a good example to follow because it exercises all three parts of the interface: it is **periodic**, it **probes the jobs** before deciding, and its decision is a plain **GPU-share plus hyper-parameters** schedule. The whole implementation is 94 lines in `EdgeScheduler/schedulers/retraining/ekya.py`.
+
+**The mechanism it implements.** Every `react_interval` seconds, Ekya re-evaluates the candidate training configurations (`candidate_hyps`) of every running job by running a **short trial retraining** of each candidate and keeping the configuration that returned the highest accuracy gain. In the next period every job receives a share of the GPU proportional to that gain, so the configurations that pay off get more GPU time.
+
+**The code that does it** (trimmed to the scheduling-relevant lines):
+
+```python
+class EkyaScheduler(PeriodicScheduler):
+    def __init__(self, react_interval, training_trial_duration, candidate_hyps):
+        super().__init__(react_interval)                      # Part 1: periodic trigger
+        self.candidate_hyps = candidate_hyps
+        self.training_trial_duration = training_trial_duration
+        self._cur_schedule = None
+        self._solving = False
+        self._uniform_scheduler = UniformScheduler()
+
+    async def try_a_training_or_infer(self, job, hyps):       # Part 2: probe one candidate
+        acc_improvement, _, _ = await job.run_for.remote(
+            None, self.training_trial_duration,
+            ensure_no_side_effects=True, hyps=hyps)
+        return acc_improvement
+
+    async def run(self, jobs):
+        if not self._solving:                                 # never block the window:
+            asyncio.create_task(self.start_solving(jobs))     # search in the background
+        if self._cur_schedule is None or self._cur_schedule == {}:
+            return await self.get_uniform_schedule(jobs)      # fall back until it is ready
+        return self._cur_schedule
+
+    async def start_solving(self, jobs):
+        ...
+        for job_id, job in jobs.items():
+            best_acc, cur_best_hyps = 0, None
+            for hyps in self.candidate_hyps:                  # try every candidate config
+                acc = await self.try_a_training_or_infer(job, hyps)
+                if acc >= best_acc:
+                    best_acc, cur_best_hyps = acc, hyps
+            best_hyps[job_id], acc_improvements[job_id] = cur_best_hyps, best_acc
+        ...
+        for job_id, job in jobs.items():                      # Part 3: share proportional to the gain
+            res[job_id] = {
+                'max_gpu_utilization': max(acc_improvements[job_id] / sum_acc_improvements - 0.01, 0.01),
+                'hyps': best_hyps[job_id] if 'train' in job_id else None,
+            }
+        self._cur_schedule = res
+```
+
+**The four integration steps, for this scheduler.**
+
+1. **Parameters are constructor arguments.** `react_interval`, `training_trial_duration` and `candidate_hyps` are all passed in; nothing about the scenario is hard-coded.
+2. **The class is exported** from `EdgeScheduler/schedulers/retraining/__init__.py` (`from .ekya import EkyaScheduler`).
+3. **The factory branch maps the CLI name to an actor** and injects the parameters - here `training_configs` (the per-model `(lr, batch_size)` profile passed by the driver) becomes the candidate list:
+
+    ```python
+    elif scheduler_name == "ekya":
+        return ray.remote(num_gpus=0.1)(EkyaScheduler).remote(
+            react_interval=40,
+            training_trial_duration=5,
+            candidate_hyps=[dict(c) for c in training_configs])
+    ```
+
+4. **Run it** exactly like any other scheduler:
+
+    ```bash
+    cd EdgeScheduler
+
+    python examples/experiments/main.py --scheduler ekya
+    python examples/experiments/image_classification/resnet18.py --scheduler ekya
+    ```
+
+**Checklist for a new scheduler.**
+
+- [ ] `reacted_events_type()` declares the trigger (job-set event / every window / periodic).
+- [ ] `async run(jobs)` returns quickly and returns a complete `{job_id: {...}}` schedule.
+- [ ] Every decision is expressed through `max_gpu_utilization` (plus optional `max_cpu_utilization`) and `hyps`.
+- [ ] Optional: probe candidates with `ensure_no_side_effects=True` trials and read `job.get_metrics()` to close the loop.
+- [ ] Optional: reuse `EdgeScalingLawAccuracyPredictor`, `evolutionary_algorithm` or the measured latency table when the decision involves scaling the model itself.
+- [ ] The class is exported in `schedulers/retraining/__init__.py`, has a branch with its parameters in `build_scheduler.py`, and its name is listed in the driver's `--scheduler` choices.
