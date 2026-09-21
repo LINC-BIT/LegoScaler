@@ -849,22 +849,21 @@ python examples/experiments/object_detection/yolos.py --scheduler codl   # per-m
 | &#9745; | [PipeSD (ICML'26)](https://arxiv.org/abs/2605.13319)                                                                        | [`pipesd`](EdgeScheduler/schedulers/retraining/pipesd.py)       | [Link](single_results/results-3.3.1-pipesd.md)    |
 | &#9745; | [SwiftSNNI](https://dl.acm.org/doi/abs/10.1145/3777884.3797005)                                                             | [`swiftsnni`](EdgeScheduler/schedulers/retraining/swiftsnni.py) | [Link](single_results/results-3.3.1-swiftsnni.md) |
 
-> A scheduler name without a link behind it (*Uniform*) comes from an earlier version of this artifact and no public link is registered here. Some of the 2024-2026 papers above are mapped onto the unified interface with an explicit simplification (each scheduler file documents what is mapped and what is not); see the per-file docstrings for the details.
 
 #### 3.3.2 Integrating Retraining-oriented Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
 Retraining-oriented schedulers decide **whether, when and how much to retrain** — they allocate the GPU share of the retraining jobs (and may scale the model those jobs train), instead of optimising the serving path of the inference jobs.
 
-|         | Scheduler                                                                                                   | Demo                                                        | Example outputs                                 |
-|---------|-------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------|-------------------------------------------------|
-| &#9745; | [AdaEvo (TMC'25)](https://arxiv.org/abs/2309.15500) ([IEEE](https://ieeexplore.ieee.org/document/10262377)) | [`adaevo`](EdgeScheduler/schedulers/retraining/adaevo.py)   | [Link](single_results/results-3.3.2-adaevo.md)  |
-| &#9745; | [EdgeOL (arXiv'24)](https://arxiv.org/abs/2401.16694)                                                       | [`edgeol`](EdgeScheduler/schedulers/retraining/edgeol.py)   | [Link](single_results/results-3.3.2-edgeol.md)  |
-| &#9745; | [SRS (INFOCOM'25)](https://doi.org/10.1109/INFOCOM55648.2025.11044490)                                      | [`srs`](EdgeScheduler/schedulers/retraining/srs.py)         | [Link](single_results/results-3.3.2-srs.md)     |
-| &#9745; | [EdgeTA (TMC'25)](https://doi.org/10.1109/TMC.2024.3504859)                                                 | [`edge_ta`](EdgeScheduler/schedulers/retraining/edge_ta.py) | [Link](single_results/results-3.3.2-edge_ta.md) |
-| &#9745; | [RECL (NSDI'23)](https://www.usenix.org/conference/nsdi23/presentation/khani)                               | [`recl`](EdgeScheduler/schedulers/retraining/recl.py)       | [Link](single_results/results-3.3.2-recl.md)    |
-| &#9745; | [Ekya (NSDI'22)](https://www.usenix.org/conference/nsdi22/presentation/bhardwaj)                            | [`ekya`](EdgeScheduler/schedulers/retraining/ekya.py)       | [Link](single_results/results-3.3.2-ekya.md)    |
-| &#9745; | [Octopus (Computer Networks'26)](https://doi.org/10.1016/j.comnet.2025.111887)                              | [`octopus`](EdgeScheduler/schedulers/retraining/octopus.py) | [Link](single_results/results-3.3.2-octopus.md) |
-| &#9745; | [ORRIC (INFOCOM'24)](https://arxiv.org/abs/2405.16029)                                                      | [`orric`](EdgeScheduler/schedulers/retraining/orric.py)     | [Link](single_results/results-3.3.2-orric.md)   |
+|         | Scheduler                                                                                                  | Demo                                                        | Example outputs                                 |
+|---------|------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------|-------------------------------------------------|
+| &#9745; | [AdaEvo (TMC'25)](https://arxiv.org/abs/2309.15500) | [`adaevo`](EdgeScheduler/schedulers/retraining/adaevo.py)   | [Link](single_results/results-3.3.2-adaevo.md)  |
+| &#9745; | [EdgeOL (arXiv'24)](https://arxiv.org/abs/2401.16694)                                                      | [`edgeol`](EdgeScheduler/schedulers/retraining/edgeol.py)   | [Link](single_results/results-3.3.2-edgeol.md)  |
+| &#9745; | [SRS (INFOCOM'25)](https://doi.org/10.1109/INFOCOM55648.2025.11044490)                                     | [`srs`](EdgeScheduler/schedulers/retraining/srs.py)         | [Link](single_results/results-3.3.2-srs.md)     |
+| &#9745; | [EdgeTA (TMC'25)](https://doi.org/10.1109/TMC.2024.3504859)                                                | [`edge_ta`](EdgeScheduler/schedulers/retraining/edge_ta.py) | [Link](single_results/results-3.3.2-edge_ta.md) |
+| &#9745; | [RECL (NSDI'23)](https://www.usenix.org/conference/nsdi23/presentation/khani)                              | [`recl`](EdgeScheduler/schedulers/retraining/recl.py)       | [Link](single_results/results-3.3.2-recl.md)    |
+| &#9745; | [Ekya (NSDI'22)](https://www.usenix.org/conference/nsdi22/presentation/bhardwaj)                           | [`ekya`](EdgeScheduler/schedulers/retraining/ekya.py)       | [Link](single_results/results-3.3.2-ekya.md)    |
+| &#9745; | [Octopus (Computer Networks'26)](https://doi.org/10.1016/j.comnet.2025.111887)                             | [`octopus`](EdgeScheduler/schedulers/retraining/octopus.py) | [Link](single_results/results-3.3.2-octopus.md) |
+| &#9745; | [ORRIC (INFOCOM'24)](https://arxiv.org/abs/2405.16029)                                                     | [`orric`](EdgeScheduler/schedulers/retraining/orric.py)     | [Link](single_results/results-3.3.2-orric.md)   |
 
 #### 3.3.3 Integrating Other Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
