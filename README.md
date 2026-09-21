@@ -816,73 +816,57 @@ LegoScaler can integrate various **models** (e.g. CNN and Transformer) and
 
 #### 3.3.1 Integrating Inference-oriented Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
-  - **AdaInf**: Interleave incremental retraining with inference based on the severity of data drift. 
-    To this scheduler, you can set the `--scheduler` argument to `AdaInf` in the command line.
-    ```bash
-    python examples/experiments/main.py --scheduler AdaInf
-    ```
+Inference-oriented schedulers decide **how the GPU (and other compute resources) is shared among concurrent jobs so that the latency requirements of the inference jobs are met**. All of them are implemented against the same unified interface described in [3.3.3](#333-integrating-other-edge-schedulers), and each one is selected by its **CLI name** (the back-ticked name in the *Demo* column, note they are lower-case):
 
-  - **Corun**: Execute mixed jobs concurrently via spatial multiplexing.
-    To this scheduler, you can set the `--scheduler` argument to `Corun` in the command line.
-    ```bash
-    python examples/experiments/main.py --scheduler Corun
-    ```
-  
-  - **EdgeNN**: Accelerate inference jobs through semantic-aware memory management.
-    To this scheduler, you can set the `--scheduler` argument to `EdgeNN` in the command line.
-    ```bash
-    python examples/experiments/main.py --scheduler EdgeNN
-    ```
+```bash
+cd EdgeScheduler
+python examples/experiments/main.py --scheduler band      # single scenario, all apps
+python examples/experiments/object_detection/yolos.py --scheduler codl   # per-model demo
+```
 
-  - **ACBatch**: Optimize batching strategies via dynamic programming.
-    To this scheduler, you can set the `--scheduler` argument to `ACBatch` in the command line.
-    ```bash
-    python examples/experiments/main.py --scheduler ACBatch
-    ```
+**LegoScaler itself is selected with `--scheduler ours`** (the default); the schedulers below are the baselines it is compared against, and their names are listed in the two tables of this subsection.
 
-  - **MMSL**: Decomposes inference jobs via model partitioning.
-    To this scheduler, you can set the `--scheduler` argument to `MMSL` in the command line.
-    ```bash
-    python examples/experiments/main.py --scheduler MMSL
-    ```
+||Scheduler|Core idea|Paper|Demo|
+|--|--|--|--|--|
+|&#9745;|Uniform|Equal time slicing across all running jobs — the work-conserving round-robin baseline a GPU driver gives by default.|—|[`uniform`](EdgeScheduler/schedulers/retraining/uniform.py)|
+|&#9745;|[AdaInf (SIGCOMM'23)](https://doi.org/10.1145/3603269.3604830)|Data-drift adaptive scheduling for multi-model inference serving at edge servers: interleave incremental retraining with inference by filling the predicted SLO slack.|[Paper](https://doi.org/10.1145/3603269.3604830)|[`adainf`](EdgeScheduler/schedulers/retraining/adainf.py)|
+|&#9745;|[Corun (Sensors'24)](https://doi.org/10.3390/s24165262)|Concurrent inference and continuous training at the edge: run mixed inference/retraining jobs on one GPU via spatial multiplexing (offline-profiled concurrency degree + MPS).|[Paper](https://doi.org/10.3390/s24165262) / [Code](https://github.com/Real-Time-Lab/Measuring-the-Throughput-and-Tail-Latency-of-Concurrent-Model-Training-and-Inferences)|[`corun`](EdgeScheduler/schedulers/retraining/corun.py)|
+|&#9745;|[EdgeNN (ICDE'23)](https://ieeexplore.ieee.org/document/10184528)|Efficient neural network inference on CPU-GPU integrated edge devices: unified-memory zero-copy allocation plus hybrid CPU-GPU execution.|[Paper](https://ieeexplore.ieee.org/document/10184528) / [Ext. TCC'25](https://doi.org/10.1109/TCC.2025.3559346) / [Code](https://github.com/ChenyangZhang-cs/EdgeNN)|[`edgenn`](EdgeScheduler/schedulers/retraining/edgenn.py)|
+|&#9745;|[ACBatch (INFOCOM'25)](https://doi.org/10.1109/INFOCOM55648.2025.11044583)|Optimize batching strategies via dynamic programming (adaptive and cooperative batching for edge inference).|[Paper](https://doi.org/10.1109/INFOCOM55648.2025.11044583)|[`acbatch`](EdgeScheduler/schedulers/retraining/acbatch.py)|
+|&#9745;|[MMSL (INFOCOM'25)](https://ieeexplore.ieee.org/document/11044698)|Decompose an LLM across edge tiers (CT-ADS partitioning) and allocate per-block density under the bandwidth budget.|[Multi-Tier Multi-Node Scheduling of LLM for Collaborative AI Computing](https://ieeexplore.ieee.org/document/11044698)|[`mmsl`](EdgeScheduler/schedulers/retraining/mmsl.py)|
+|&#9745;|[TS-MITO (INFOCOM'25)](https://doi.org/10.1109/INFOCOM55648.2025.11044689)|Optimize model selection and cloud-edge job offloading jointly with multi-agent reinforcement learning (MAPPO).|[Joint Optimization of Model Inferencing and Task Offloading for MEC-Empowered Large Vision Model Services](https://doi.org/10.1109/INFOCOM55648.2025.11044689)|[`ts_mito`](EdgeScheduler/schedulers/retraining/ts_mito.py)|
+|&#9745;|[PSA (INFOCOM WS'25)](https://doi.org/10.1109/INFOCOMWKSHPS65812.2025.11152853)|Optimize model branch selection and communication resource allocation (accuracy-aware, energy-minimal).|[Paper](https://doi.org/10.1109/INFOCOMWKSHPS65812.2025.11152853)|[`psa`](EdgeScheduler/schedulers/retraining/psa.py)|
+|&#9745;|JSAS|Jointly schedule inference splitting and retraining: reserve GPU for latency-critical inference, then allocate the rest to training by an RFS-based (relative freshness) priority.|—|[`jsas`](EdgeScheduler/schedulers/retraining/jsas.py)|
+|&#9745;|[OINC (IWQoS'24)](https://doi.org/10.1109/IWQoS61813.2024.10682835)|Reserve a fixed fraction of resources for inference and differentiate the scheduling of the remaining (retraining) jobs by their deadlines.|[Efficient Online DNN Inference with Continuous Learning in Edge Computing](https://doi.org/10.1109/IWQoS61813.2024.10682835)|[`oinc`](EdgeScheduler/schedulers/retraining/oinc.py)|
+|&#9745;|[EOMU (MM'23)](https://arxiv.org/abs/2308.16413)|Edge-assisted on-device model update: select the execution configuration (teacher model / epoch / frames) from the observed low-confidence-frame ratio.|[Edge-Assisted On-Device Model Update for Video Analytics in Adverse Environments](https://arxiv.org/abs/2308.16413)|[`eomu`](EdgeScheduler/schedulers/retraining/eomu.py)|
+|&#9745;|[Band (MobiSys'22)](https://doi.org/10.1145/3498361.3538948)|Subgraph-centric coordination of multi-DNN inference on heterogeneous processors: subgraphs are selected and placed following a pluggable scheduling policy (least-slack-time by default).|[Paper](https://doi.org/10.1145/3498361.3538948) / [Repo](https://github.com/mrsnu/band)|[`band`](EdgeScheduler/schedulers/retraining/band.py)|
+|&#9745;|[CoDL (MobiSys'22)](https://doi.org/10.1145/3498361.3538932)|Efficient CPU-GPU co-execution for inference: partition every operator between the two processors, guided by a concurrency-aware latency predictor (no accuracy loss).|[Paper](https://doi.org/10.1145/3498361.3538932) / [Repo](https://github.com/TaihuLight/CoDL)|[`codl`](EdgeScheduler/schedulers/retraining/codl.py)|
+|&#9745;|[FlexNN (MobiCom'24)](https://doi.org/10.1145/3636534.3649391)|Adaptive DNN inference on memory-constrained devices via slicing-loading-computing joint planning: keep accuracy, trade latency for memory.|[Paper](https://doi.org/10.1145/3636534.3649391) / [Repo](https://github.com/xxxxyu/FlexNN)|[`flexnn`](EdgeScheduler/schedulers/retraining/flexnn.py)|
+|&#9745;|[GCAPS (ECRTS'24)](https://doi.org/10.4230/LIPIcs.ECRTS.2024.11)|Preemptive priority-based GPU scheduling: assign GPU-segment priorities with Audsley's algorithm and admit a task only if its worst-case response time fits its deadline.|[Paper](https://doi.org/10.4230/LIPIcs.ECRTS.2024.11)|[`gcaps`](EdgeScheduler/schedulers/retraining/gcaps.py)|
+|&#9745;|[MDDS (IoT J'25)](https://doi.org/10.1109/JIOT.2025.3591531)|Multi-endpoint DAG-driven *joint* partitioning-offloading and pipeline scheduling: the two decisions are cyclically coupled, and the solution is retrieved from a state-keyed table.|[Paper](https://doi.org/10.1109/JIOT.2025.3591531) / [Repo](https://github.com/aiheiheiheii/Partition_Scheduling)|[`mdds`](EdgeScheduler/schedulers/retraining/mdds.py)|
+|&#9745;|OctopInf|Workload-aware inference serving for edge video analytics: fine-grained resource allocation, adaptive batching and spatiotemporal co-location of tasks on GPUs.|[Repo](https://github.com/tungngreen/PipelineScheduler)|[`octopinf`](EdgeScheduler/schedulers/retraining/octopinf.py)|
+|&#9745;|[OmniBoost (DAC'23)](https://doi.org/10.1109/DAC56929.2023.10247989)|Boost the throughput of a multi-DNN workload on heterogeneous embedded devices: a lightweight throughput estimator ranks mappings while MCTS explores the mapping space.|[Paper](https://doi.org/10.1109/DAC56929.2023.10247989) / [Repo](https://github.com/AndreasKaratzas/omniboost-v1)|[`omniboost`](EdgeScheduler/schedulers/retraining/omniboost.py)|
+|&#9745;|Pantheon (MobiSys'24)|Preemptible multi-DNN inference on mobile edge GPUs: chunk-level scheduling with two stream priorities lets real-time tasks preempt each other, and nested model variants absorb the preempted work.|[Repo](https://github.com/PantheonInfer/Pantheon)|[`pantheon`](EdgeScheduler/schedulers/retraining/pantheon.py)|
+|&#9745;|PipeSD (ICML'26)|Cloud-edge collaborative pipeline inference with speculative decoding: dual-threshold verification triggering tuned online by Bayesian optimization.|[Repo](https://github.com/Ghanyunhe/PipeSD)|[`pipesd`](EdgeScheduler/schedulers/retraining/pipesd.py)|
+|&#9745;|SwiftSNNI|Scheduling for secure neural network inference: overlap the offline preprocessing phase of future requests with the online inference jobs that are currently active, with aging-based starvation prevention.|[Repo](https://github.com/KanwalBat00l/SwiftSNNI)|[`swiftsnni`](EdgeScheduler/schedulers/retraining/swiftsnni.py)|
+|&#9745;|CPU offload *(this repo, not a baseline)*|Move the inference jobs whose measured CPU latency still meets their SLO to the CPU resource pool, and hand the freed GPU share to the retraining jobs.|—|[`cpu_offload`](EdgeScheduler/schedulers/retraining/cpu_offload.py)|
 
-  - **TS-MITO**: Optimize model selection and job offloading based on reinforcement learning.
-    To this scheduler, you can set the `--scheduler` argument to `TS-MITO` in the command line.
-    ```bash
-    python examples/experiments/main.py --scheduler TS-MITO
-    ```
-
-  - **PSA**: Optimize model branch selection and communication resource allocation.
-    To this scheduler, you can set the `--scheduler` argument to `PSA` in the command line.
-    ```bash
-    python examples/experiments/main.py --scheduler PSA
-    ```
+> `—` in the *Paper* column means the scheduler comes from an earlier version of this artifact and no public link is registered here; its mechanism is summarised in the *Core idea* column. Some of the 2024-2026 papers above are mapped onto the unified interface with an explicit simplification (each scheduler file documents what is mapped and what is not); see the per-file docstrings for the details.
 
 #### 3.3.2 Integrating Retraining-oriented Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
-  - **AdaEvo**: Schedule multiple retraining jobs based on urgency.
-    To this scheduler, you can set the `--scheduler` argument to `AdaEvo` in the command line.
-    ```bash
-    python examples/experiments/main.py --scheduler AdaEvo
-    ```
-    
-  - **EdgeOL**: Improve the computational efficiency of retraining jobs according to Centered Kernel Alignment (CKA) similarity.
-    To this scheduler, you can set the `--scheduler` argument to `EdgeOL` in the command line.
-    ```bash
-    python examples/experiments/main.py --scheduler EdgeOL
-    ```
-    
-  - **SRS**: Insert retraining jobs into the Directed Acyclic Graph (DAG) of job requests.
-    To this scheduler, you can set the `--scheduler` argument to `SRS` in the command line.
-    ```bash
-    python examples/experiments/main.py --scheduler SRS
-    ```
-        
-  - **EdgeTA**: Perform neuron-grained model scaling and scheduling for retraining jobs.
-    To this scheduler, you can set the `--scheduler` argument to `EdgeTA` in the command line.
-    ```bash
-    python examples/experiments/main.py --scheduler EdgeTA
-    ```
+Retraining-oriented schedulers decide **whether, when and how much to retrain** — they allocate the GPU share of the retraining jobs (and may scale the model those jobs train), instead of optimising the serving path of the inference jobs.
+
+||Scheduler|Core idea|Paper|Demo|
+|--|--|--|--|--|
+|&#9745;|[AdaEvo (TMC'25)](https://arxiv.org/abs/2309.15500)|Edge-assisted continuous model evolution: rank the retraining jobs by their predicted accuracy gain / retraining time, with admission control by the memory capacity.|[arXiv](https://arxiv.org/abs/2309.15500) / [IEEE](https://ieeexplore.ieee.org/document/10262377)|[`adaevo`](EdgeScheduler/schedulers/retraining/adaevo.py)|
+|&#9745;|[EdgeOL (arXiv'24)](https://arxiv.org/abs/2401.16694)|Efficient in-situ online learning on edge devices: adapt the fine-tuning frequency (DAF) to the inference intensity and reuse frozen tensors selected by CKA similarity.|[arXiv](https://arxiv.org/abs/2401.16694)|[`edgeol`](EdgeScheduler/schedulers/retraining/edgeol.py)|
+|&#9745;|[SRS (INFOCOM'25)](https://doi.org/10.1109/INFOCOM55648.2025.11044490)|Insert retraining jobs into the Directed Acyclic Graph (DAG) of the request pipeline (the paper's Single Request Scheduling).|[Online Scheduling of Edge Multiple-Model Inference with DAG Structure and Retraining](https://doi.org/10.1109/INFOCOM55648.2025.11044490)|[`srs`](EdgeScheduler/schedulers/retraining/srs.py)|
+|&#9745;|[EdgeTA (TMC'25)](https://doi.org/10.1109/TMC.2024.3504859)|Neuron-grained scaling of foundation models in edge-side retraining: search the per-job density by a genetic algorithm.|[Paper](https://doi.org/10.1109/TMC.2024.3504859)|[`edge_ta`](EdgeScheduler/schedulers/retraining/edge_ta.py)|
+|&#9745;|[RECL (NSDI'23)](https://www.usenix.org/conference/nsdi23/presentation/khani)|Responsive resource-efficient continuous learning for video analytics: an in-band profiler drives the retraining share by the observed accuracy improvement.|[Paper](https://www.usenix.org/conference/nsdi23/presentation/khani)|[`recl`](EdgeScheduler/schedulers/retraining/recl.py)|
+|&#9745;|[Ekya (NSDI'22)](https://www.usenix.org/conference/nsdi22/presentation/bhardwaj)|Continuous learning of video analytics models on edge compute servers: periodically run short *trial* retrainings of the candidate configurations and keep the best-returning one.|[Paper](https://www.usenix.org/conference/nsdi22/presentation/bhardwaj)|[`ekya`](EdgeScheduler/schedulers/retraining/ekya.py)|
+|&#9745;|[Octopus (Computer Networks'26)](https://doi.org/10.1016/j.comnet.2025.111887)|Accuracy-aware resource scheduling for multi-video streaming inference at the edge: retrain the models whose freshness/accuracy score degrades the most.|[Paper](https://doi.org/10.1016/j.comnet.2025.111887)|[`octopus`](EdgeScheduler/schedulers/retraining/octopus.py)|
+|&#9745;|[ORRIC (INFOCOM'24)](https://arxiv.org/abs/2405.16029)|Online resource allocation for edge intelligence with colocated model retraining and inference: weigh retraining against inference with time-varying weights derived from the measured accuracy function.|[arXiv](https://arxiv.org/abs/2405.16029) / [Code](https://github.com/caihuaiguang/ORRIC)|[`orric`](EdgeScheduler/schedulers/retraining/orric.py)|
 
 #### 3.3.3 Integrating Other Edge Schedulers<img src="./readme_imgs/heading-divider-h4.svg" alt="" width="100%" height="1">
 
