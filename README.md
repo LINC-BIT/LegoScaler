@@ -957,7 +957,7 @@ Through the job handle the scheduler can read the past and probe the future:
     python examples/experiments/image_classification/resnet18.py --scheduler my_scheduler
     ```
 
-**Where the parameters travel**
+**The parameters:**
 
 | Channel | Carries |
 |---------|---------|
