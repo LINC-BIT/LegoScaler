@@ -468,7 +468,7 @@ The resource requirements and outputs are listed below:
         <td>20GB memory<br>50GB disk space</td>
         <td>Model: ResNet-18</td>
         <td>
-          1
+          <img src="./readme_imgs/fig_10.png" width="250">
         </td>
       </tr>
     </tbody>
