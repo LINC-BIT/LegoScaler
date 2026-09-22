@@ -466,7 +466,7 @@ The resource requirements and outputs are listed below:
     <tbody>
       <tr>
         <td>20GB memory<br>50GB disk space</td>
-        <td>Model: ResNet-18</td>
+        <td>Model: ViT-B/16<br>Time: 60s</td>
         <td>
           <img src="./readme_imgs/fig_10.png" width="250">
         </td>
