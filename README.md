@@ -465,7 +465,7 @@ The resource requirements and outputs are listed below:
     </thead>
     <tbody>
       <tr>
-        <td>1 hour<br>20GB memory<br>50GB disk space</td>
+        <td>20GB memory<br>50GB disk space</td>
         <td>Model: ResNet-18</td>
         <td>
           <img src="./readme_imgs/fig_10.png" width="250">
